@@ -18,7 +18,17 @@ But that is just one of many potentially wickedly cool use-cases for this librar
 
 
 
-image:https://travis-ci.org/rundis/rewrite-cljs.svg["Build Status", link="https://travis-ci.org/rundis/rewrite-cljs"]
+[.float-group]
+--
+[.left]
+image::https://travis-ci.org/rundis/rewrite-cljs.svg["Build Status", link="https://travis-ci.org/rundis/rewrite-cljs"]
+
+[.left]
+image::http://clojars.org/rewrite-cljs/latest-version.svg[link="http://clojars.org/rewrite-cljs"]
+--
+
+
+
 
 
 ## Usage
