@@ -18,6 +18,9 @@ But that is just one of many potentially wickedly cool use-cases for this librar
 
 
 
+image:https://travis-ci.org/rundis/rewrite-cljs.svg["Build Status", link="https://travis-ci.org/rundis/rewrite-cljs"]
+
+
 ## Usage
 
 The aim is that this lib should work as closely as possible as it's original Clojure counterpart.
