@@ -1,0 +1,144 @@
+# rewrite-cljs
+
+This library is a ClojureScript port of it's fabulous big-brother https://github.com/xsc/rewrite-clj[rewrite-clj].
+It provides features to traverse and rewrite Clojure/ClojureScript/EDN documents in a whitespace- and comment-aware manner.
+
+
+TIP: The initial driver for creating the port was to provide Clojure/ClojureScript refactoring support in https://github.com/LightTable/LightTable[Light Table].
+But that is just one of many potentially wickedly cool use-cases for this library.
+
+
+
+
+
+.The library includes:
+- An EDN parser
+- An EDN aware zipper (using clojure.zip for ClojureScript)
+- A customized cljs.reader (based on https://github.com/kanaka/clojurescript/blob/cljs_in_cljs/src/cljs/cljs/reader.cljs[clojurescript-in-clojurescript]) that mimics more of clojure.tools.reader
+
+
+
+## Usage
+
+The aim is that this lib should work as closely as possible as it's original Clojure counterpart.
+I'll try to document the individual differences eventually, but for now check out the docs for the
+original lib
+
+
+.Documentation
+- https://github.com/xsc/rewrite-clj[rewrite-clj - README]
+- http://xsc.github.io/rewrite-clj[rewrite-clj - API docs]
+
+
+### Sample
+Here's a little teaser on the sort of things you can do with the zipper features.
+
+[source,clojure]
+----
+(ns rewrite-clj.zip-test
+  (:require-macros [cemerick.cljs.test :refer (is deftest )])
+  (:require [cemerick.cljs.test :as t]
+            [rewrite-clj.zip :as z]
+            [rewrite-clj.node :as n]))
+
+(deftest manipulate-sexpr
+  (let [sexpr "
+ ^{:dynamic true} (+ 1 1
+   (+ 2 2)
+   (reduce + [1 3 4]))"
+        expected "
+ ^{:dynamic true} (+ 1 1
+   (+ 2 2)
+   (reduce + [6 7 [1 2]]))"]
+    (is (= expected (-> sexpr
+                        z/of-string
+                        (z/find-tag-by-pos {:row 4 :col 19} :vector)
+                        (z/replace [5 6 7])
+                        (z/append-child [1 2])
+                        z/down
+                        z/remove
+                        z/root-string)))))
+----
+
+
+
+
+
+## Limitations and omissions
+* There is no support for parsing files (duh)
+* cljs.extended.reader which is used for reading edn/clojure/clojurescript, has lot of limitations. Pls don't be surprised
+when encountering errors during reading of perhaps legal but hopefully infrequently used language constructs.
+* Some features in rewrite-clj is "heavily" based on macros, these features have been omitted for now
+** Nice printing of nodes - Not implemented
+** https://github.com/xsc/rewrite-clj/blob/master/src/rewrite_clj/zip/subedit.clj[zip subedit support] - Not implemented (YET!)
+
+
+
+## Rationale
+
+### Why the old ClojureScript version ?
+Purely selfish reasons. I plan to use this library from Light Table, which currently depends on an old version.
+
+
+### Why not cljx in the rewrite-clj ?
+I'm not really prepared to invest heavily in learning cljx for this particular lib.
+https://github.com/xsc[Xsc] and I concluded
+that we could consider backporting when cljc (http://dev.clojure.org/display/design/Reader+Conditionals [Reader Conditionals]) becomes more mainstream.
+
+
+
+## License
+
+
+### License for rewrite-cljs
+```
+The MIT License (MIT)
+
+Copyright (c) 2015 Magnus Rundberget
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+
+
+### License for rewrite-clj
+
+```
+The MIT License (MIT)
+
+Copyright (c) 2013-2015 Yannick Scherer
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
