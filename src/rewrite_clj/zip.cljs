@@ -9,6 +9,7 @@
             [rewrite-clj.zip.editz :as ed]
             [rewrite-clj.zip.insert :as ins]
             [rewrite-clj.zip.removez :as rm]
+            [rewrite-clj.zip.seqz :as sz]
             [clojure.zip :as z]))
 
 
@@ -45,7 +46,7 @@
 
 
 ;; **********************************
-;; Originally in rewrite-clj.zip.find
+;; Originally in rewrite-clj.zip.findz
 ;; **********************************
 (def find f/find)
 (def find-depth-first f/find-depth-first)
@@ -62,7 +63,7 @@
 
 
 ;; **********************************
-;; Originally in rewrite-clj.zip.edit
+;; Originally in rewrite-clj.zip.editz
 ;; **********************************
 (def replace ed/replace)
 (def edit ed/edit)
@@ -71,7 +72,7 @@
 (def suffix ed/suffix)
 
 ;; **********************************
-;; Originally in rewrite-clj.zip.remove
+;; Originally in rewrite-clj.zip.removez
 ;; **********************************
 (def remove rm/remove)
 
@@ -83,3 +84,18 @@
 (def insert-left ins/insert-left)
 (def insert-child ins/insert-child)
 (def append-child ins/append-child)
+
+
+;; **********************************
+;; Originally in rewrite-clj.zip.seqz
+;; **********************************
+(def seq? sz/seq?)
+(def list? sz/list?)
+(def vector? sz/vector?)
+(def set? sz/set?)
+(def map? sz/map?)
+(def map-vals sz/map-vals)
+(def map-keys sz/map-keys)
+(def map sz/map)
+(def get sz/get)
+(def assoc sz/assoc)
