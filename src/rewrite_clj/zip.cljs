@@ -49,6 +49,7 @@
 ;; Originally in rewrite-clj.zip.findz
 ;; **********************************
 (def find f/find)
+(def find-last-by-pos f/find-last-by-pos)
 (def find-depth-first f/find-depth-first)
 (def find-next f/find-next)
 (def find-next-depth-first f/find-next-depth-first)

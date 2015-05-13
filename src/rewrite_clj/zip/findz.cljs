@@ -19,7 +19,7 @@
 (defn in-range? [{:keys [row col end-row end-col]} pos]
   (and row
        (some #{(:row pos)} (range row (inc end-row)))
-       (some #{(:col pos)} (range (inc col) end-col))))
+       (some #{(:col pos)} (range col end-col))))
 
 
 ;; ## Find Operations
@@ -39,20 +39,28 @@
         (first))))
 
 
+(defn- bounds [zloc]
+  (let [m (-> zloc z/node meta)]
+    (case (base/tag zloc)
+      :vector (update-in m [:col] inc)
+      :list   (update-in m [:col] inc)
+      :map    (update-in m [:col] inc)
+      :set    (update-in m [:col] #(+ 2 %))
+      :fn     (update-in m [:col] #(+ 2 %))
+      m)))
+
 (defn find-last-by-pos
   "Find last node (if more than one node) that is in range of pos and
    satisfying the given predicate depth first from initial zipper
    location."
   ([zloc pos p?]
    (->> zloc
-        (iterate m/next)
+        (iterate z/next)
         (take-while identity)
         (take-while (complement m/end?))
         (filter #(and (p? %)
-                     (in-range? (-> % z/node meta) pos)))
+                      (in-range? (-> % z/node meta) pos)))
         last)))
-
-
 
 
 (defn find-depth-first
