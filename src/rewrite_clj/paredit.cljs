@@ -2,6 +2,7 @@
   (:require [rewrite-clj.zip :as z]
             [clojure.zip :as zz]
             [rewrite-clj.zip.whitespace :as ws]
+            [rewrite-clj.zip.utils :as u]
             [rewrite-clj.node :as nd]))
 
 
@@ -11,6 +12,10 @@
 
 (defn- empty-seq? [zloc]
   (and (z/seq? zloc) (not (seq (z/sexpr zloc)))))
+
+;; helper
+(defn move-n [loc f n]
+  (->> loc (iterate f) (take n) last))
 
 (defn- top
   [zloc]
@@ -53,10 +58,32 @@
 ;; Paredit functions
 ;;*****************************
 
+
+(defn kill [zloc]
+  (let [left (zz/left zloc)]
+     (-> zloc
+         (u/remove-right-while (constantly true))
+         zz/remove
+         (#(if left
+            (global-find-by-node % (z/node left))
+            %)))))
+
+
+(defn- find-slurpee [zloc f]
+  (loop [l (z/up zloc)
+         n 1]
+    (cond
+     (nil? l) nil
+     (not (nil? (f l))) [n (f l)]
+     (nil? (z/up l)) nil
+     :else (recur (z/up l) (inc n)))))
+
 (defn slurp-forward
   [zloc]
   (let [[slurpee-loc ins-fn] (or (when (empty-seq? zloc) [(z/right zloc) z/append-child])
-                                 [(some-> zloc z/up z/right) z/insert-right])]
+                                 (let [[n l] (find-slurpee zloc z/right)]
+                                   (when l
+                                     [l #(-> %1 (move-n z/up n) (z/insert-right %2))])))]
     (if-not slurpee-loc
       zloc
       (-> slurpee-loc
@@ -70,8 +97,8 @@
 (defn slurp-backward
   [zloc]
   (let [slurpee-loc (or (when (empty-seq? zloc) (z/left zloc))
-                        (some-> zloc z/up z/left))]
-
+                        (let [[n l] (find-slurpee zloc z/left)]
+                          l))]
 
     (if-not slurpee-loc
       zloc

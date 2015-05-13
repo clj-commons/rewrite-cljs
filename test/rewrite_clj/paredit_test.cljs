@@ -6,6 +6,60 @@
             [clojure.zip :as zz]
             [rewrite-clj.paredit :as pe]))
 
+;; helper
+(defn move-n [loc f n]
+  (->> loc (iterate f) (take n) last))
+
+
+(deftest kill-to-end-of-sexpr
+  (let [res (-> "[1 2 3 4]"
+                z/of-string
+                z/down zz/right
+                pe/kill)]
+    (is (= "[1]" (-> res z/root-string)))
+    (is (= "1" (-> res z/string)))))
+
+(deftest kill-to-end-of-line
+  (let [res (-> "[1 2] ; useless comment"
+                z/of-string
+                zz/right
+                pe/kill)]
+    (is (= "[1 2]" (-> res z/root-string)))
+    (is (= "[1 2]" (-> res z/string)))))
+
+(deftest kill-to-wipe-all-sexpr-contents
+  (let [res (-> "[1 2 3 4]"
+                z/of-string
+                z/down
+                pe/kill)]
+    (is (= "[]" (-> res z/root-string)))
+    (is (= "[]" (-> res z/string)))))
+
+(deftest kill-to-wipe-all-sexpr-contents-in-nested-seq
+  (let [res (-> "[[1 2 3 4]]"
+                z/of-string
+                z/down
+                pe/kill)]
+    (is (= "[]" (-> res z/root-string)))
+    (is (= "[]" (-> res z/string)))))
+
+(deftest kill-when-left-is-sexpr
+  (let [res (-> "[1 2 3 4] 2"
+                z/of-string
+                zz/right
+                pe/kill)]
+    (is (= "[1 2 3 4]" (-> res z/root-string)))
+    (is (= "[1 2 3 4]" (-> res z/string)))))
+
+(deftest kill-it-all
+  (let [res (-> "[1 2 3 4] 5"
+                z/of-string
+                pe/kill)]
+    (.log js/console res)
+    (is (= "" (-> res z/root-string)))
+    (is (= "" (-> res z/string)))))
+
+
 
 (deftest slurp-forward-and-keep-loc-rightmost
   (let [res (-> "[[1 2] 3 4]"
@@ -39,6 +93,24 @@
     (is (= "[[1 2 3] 4]" (-> res z/root-string)))
     (is (= " " (-> res z/string)))))
 
+(deftest slurp-forward-nested
+  (let [res (-> "[[[1 2]] 3 4]"
+                z/of-string
+                z/down z/down z/down
+                pe/slurp-forward)]
+    (is (= "[[[1 2] 3] 4]" (-> res z/root-string)))
+    (is (= "1" (-> res z/string)))))
+
+(deftest slurp-forward-nested-silly
+  (let [res (-> "[[[[[1 2]]]] 3 4]"
+                z/of-string
+                z/down z/down z/down z/down z/down
+                pe/slurp-forward)]
+    (is (= "[[[[[1 2]]] 3] 4]" (-> res z/root-string)))
+    (is (= "1" (-> res z/string)))))
+
+
+
 
 (deftest slurp-backward-and-keep-loc-leftmost
   (let [res (-> "[1 2 [3 4]]"
@@ -62,6 +134,22 @@
                 z/down z/rightmost
                 pe/slurp-backward)]
     (is (= "[1 2 3 [4]]" (-> res z/root-string)))
+    (is (= "4" (-> res z/string)))))
+
+(deftest slurp-backward-nested
+  (let [res (-> "[1 2 [[3 4]]]"
+                z/of-string
+                z/down z/rightmost z/down z/down z/rightmost
+                pe/slurp-backward)]
+    (is (= "[1 [2 [3 4]]]" (-> res z/root-string)))
+    (is (= "4" (-> res z/string)))))
+
+(deftest slurp-backward-nested-silly
+  (let [res (-> "[1 2 [[[3 4]]]]"
+                z/of-string
+                z/down z/rightmost z/down z/down z/down z/rightmost
+                pe/slurp-backward)]
+    (is (= "[1 [2 [[3 4]]]]" (-> res z/root-string)))
     (is (= "4" (-> res z/string)))))
 
 
@@ -204,8 +292,6 @@
     (is (= expected (-> res z/root-string)))))
 
 
-(defn move-n [loc f n]
-  (->> loc (iterate f) (take n) last))
 
 (deftest move-to-prev-flat
   (is (= "(+ 2 1)" (-> "(+ 1 2)"
