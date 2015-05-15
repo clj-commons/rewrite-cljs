@@ -117,7 +117,7 @@
       zloc
       (-> barfee-loc
           z/remove
-          z/up
+          (#(if (zz/left zloc) (z/up %) %))
           (z/insert-right (z/node barfee-loc))
           (#(or (global-find-by-node % (z/node zloc))
                 (global-find-by-node % (z/node barfee-loc))))))))
@@ -146,7 +146,7 @@
   (-> zloc
       (z/insert-left (create-seq-node t nil))
       z/remove
-      (z/insert-child (z/node zloc))
+      (zz/append-child (z/node zloc))
       z/down))
 
 

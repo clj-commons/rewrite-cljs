@@ -39,15 +39,6 @@
         (first))))
 
 
-(defn- bounds [zloc]
-  (let [m (-> zloc z/node meta)]
-    (case (base/tag zloc)
-      :vector (update-in m [:col] inc)
-      :list   (update-in m [:col] inc)
-      :map    (update-in m [:col] inc)
-      :set    (update-in m [:col] #(+ 2 %))
-      :fn     (update-in m [:col] #(+ 2 %))
-      m)))
 
 (defn find-last-by-pos
   "Find last node (if more than one node) that is in range of pos and

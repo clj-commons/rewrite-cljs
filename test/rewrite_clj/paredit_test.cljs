@@ -180,6 +180,17 @@
     (is (= "3" (-> res z/string)))))
 
 
+(deftest barf-forward-at-when-only-one
+  (let [res (-> "[[1] 2]"
+                z/of-string
+                z/down z/down
+                pe/barf-forward)]
+
+    (is (= "[[] 1 2]" (-> res z/root-string)))
+    (is (= "1" (-> res z/string)))))
+
+
+
 (deftest barf-backward-and-keep-current-loc
   (let [res (-> "[1 [2 3 4]]"
                 z/of-string
@@ -209,6 +220,15 @@
                 (pe/wrap-around :list))]
     (is (= "1" (-> res z/string)))))
 
+
+(deftest wrap-around-fn
+  (is (= "(-> (#(+ 1 1)))" (-> (z/of-string "(-> #(+ 1 1))")
+                               z/down z/right
+                                (pe/wrap-around :list)
+                                z/root-string))))
+
+
+(map #(+ 1 1) [1 2])
 
 
 (deftest split
