@@ -16,10 +16,14 @@
     #(= (base/tag %) t)))
 
 
-(defn in-range? [{:keys [row col end-row end-col]} pos]
-  (and row
-       (some #{(:row pos)} (range row (inc end-row)))
-       (some #{(:col pos)} (range col end-col))))
+(defn in-range? [{:keys [row col end-row end-col]} {r :row c :col}]
+  (cond
+   (or  (> row r) (> r end-row)) false
+   (and (> r row) (> end-row r)) true
+   (and (>= c col) (> end-col c)) true
+   (and (= r row) (> end-row r) (>= c col)) true
+   (and (= r end-row) (> end-row r) (>= col c)) true
+   :else false))
 
 
 ;; ## Find Operations
@@ -44,6 +48,7 @@
   "Find last node (if more than one node) that is in range of pos and
    satisfying the given predicate depth first from initial zipper
    location."
+  ([zloc pos] (find-last-by-pos zloc pos (constantly true)))
   ([zloc pos p?]
    (->> zloc
         (iterate z/next)
