@@ -3,7 +3,8 @@
             [clojure.zip :as zz]
             [rewrite-clj.zip.whitespace :as ws]
             [rewrite-clj.zip.utils :as u]
-            [rewrite-clj.node :as nd]))
+            [rewrite-clj.node :as nd]
+            [rewrite-clj.node.stringz :as sn :refer [StringNode] ]))
 
 
 ;;*****************************
@@ -59,6 +60,8 @@
 ;;*****************************
 
 
+
+
 (defn kill [zloc]
   (let [left (zz/left zloc)]
      (-> zloc
@@ -67,6 +70,37 @@
          (#(if left
             (global-find-by-node % (z/node left))
             %)))))
+
+(defn- string-node? [zloc]
+  (= (some-> zloc z/node type) (type (nd/string-node " "))))
+
+
+(defn kill-in-string-node [zloc pos]
+  (let [bounds (-> zloc z/node meta)
+        row-idx (- (:row pos) (:row bounds))
+        sub-length (if-not (= (:row pos) (:row bounds))
+                      (dec (:col pos))
+                      (- (:col pos) (inc (:col bounds))))]
+
+    (-> (take (inc row-idx) (-> zloc z/node :lines))
+        vec
+        (update-in [row-idx] #(.substring % 0 sub-length))
+        (#(z/replace zloc (nd/string-node %))))))
+
+
+(defn kill-at-pos
+  "String aware kill"
+  [zloc pos]
+  (if-let [candidate (z/find-last-by-pos zloc pos)]
+    (if (string-node? candidate)
+      (if (= (z/string candidate) "\"\"")
+        (z/remove candidate)
+        (kill-in-string-node candidate pos))
+      (if (and (empty-seq? candidate)
+               (> (:col pos) (-> candidate z/node meta :col)))
+        (z/remove candidate)
+        (kill candidate)))
+    zloc))
 
 
 (defn- find-slurpee [zloc f]

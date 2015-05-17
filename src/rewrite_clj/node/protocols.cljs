@@ -65,7 +65,6 @@
 (defn child-sexprs
   "Get all child s-expressions for the given node."
   [node]
-  (println (inner? node))
   (if (inner? node)
     (sexprs (children node))))
 

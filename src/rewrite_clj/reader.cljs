@@ -12,8 +12,6 @@
   [reader fmt & data]
   (let [c (r/get-column-number reader)
         l (r/get-line-number reader)]
-    (println "Here")
-    (println c)
     (throw
       (js/Error.
         (str data fmt

@@ -6,6 +6,8 @@
             [clojure.zip :as zz]
             [rewrite-clj.paredit :as pe]))
 
+
+
 ;; helper
 (defn move-n [loc f n]
   (->> loc (iterate f) (take n) last))
@@ -55,9 +57,61 @@
   (let [res (-> "[1 2 3 4] 5"
                 z/of-string
                 pe/kill)]
-    (.log js/console res)
     (is (= "" (-> res z/root-string)))
     (is (= "" (-> res z/string)))))
+
+
+
+(deftest kill-at-pos-when-in-empty-seq
+  (let [res (-> "[] 5"
+                z/of-string
+                (pe/kill-at-pos {:row 1 :col 2}))]
+    (is (= "5" (-> res z/root-string)))
+    (is (= "5" (-> res z/string)))))
+
+(deftest kill-at-pos-when-string
+  (let [res (-> "(str \"Hello \" \"World!\")"
+                z/of-string
+                z/down
+                (pe/kill-at-pos {:row 1 :col 9}))]
+    (is (= "(str \"He\" \"World!\")" (-> res z/root-string)))))
+
+
+(deftest kill-at-pos-when-string-multiline
+  (let [sample "(str \"
+First line
+  Second Line
+    Third Line
+        \")"
+        expected "(str \"
+First line
+  Second\")"
+
+        res (-> sample
+                z/of-string
+                z/down
+                (pe/kill-at-pos {:row 3 :col 9}))]
+    (is (= expected (-> res z/root-string)))))
+
+
+
+
+(deftest kill-at-pos-multiline-aligned
+  (let [sample "
+(println \"Hello
+         There
+         World\")"]
+    (is (= "\n(println \"Hello\")" (-> sample
+                                      z/of-string
+                                      (pe/kill-at-pos {:row 2 :col 16})
+                                      (z/root-string))))))
+
+
+
+(deftest kill-at-pos-when-empty-string
+  (is (= "" (-> (z/of-string "\"\"") (pe/kill-at-pos {:row 1 :col 1}) z/root-string))))
+
+
 
 
 
