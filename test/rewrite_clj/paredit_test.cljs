@@ -163,8 +163,19 @@ First line
     (is (= "[[[[[1 2]]] 3] 4]" (-> res z/root-string)))
     (is (= "1" (-> res z/string)))))
 
-
-
+(deftest slurp-foward-keep-linebreak
+  (let [sample "
+(let [dill]
+  {:a 1}
+  {:b 2})"
+        expected "
+(let [dill {:a 1}]
+  {:b 2})"]
+    (is (= expected (-> sample
+                        z/of-string
+                        z/down z/right z/down
+                        pe/slurp-forward
+                        z/root-string)))))
 
 (deftest slurp-backward-and-keep-loc-leftmost
   (let [res (-> "[1 2 [3 4]]"
@@ -214,6 +225,15 @@ First line
                 pe/barf-forward)]
     (is (= "[[1 2] 3 4]" (-> res z/root-string)))
     (is (= "2" (-> res z/string)))))
+
+(deftest barf-forward-at-leftmost
+  (let [res (-> "[[1 2 3] 4]"
+                z/of-string
+                z/down z/down
+                pe/barf-forward)]
+    (is (= "[[1 2] 3 4]" (-> res z/root-string)))
+    (is (= "1" (-> res z/string)))))
+
 
 (deftest barf-forward-at-rightmost-moves-out-of-sexrp
   (let [res (-> "[[1 2 3] 4]"

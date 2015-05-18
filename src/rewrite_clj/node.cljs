@@ -70,6 +70,7 @@
 (def newline-node ws-node/newline-node)
 (def spaces ws-node/spaces)
 (def whitespace? ws-node/whitespace?)
+(def linebreak? ws-node/linebreak?)
 
 (defn whitespace-or-comment?
   "Check whether the given node represents whitespace or comment."

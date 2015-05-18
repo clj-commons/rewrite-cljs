@@ -151,7 +151,7 @@
       zloc
       (-> barfee-loc
           z/remove
-          (#(if (zz/left zloc) (z/up %) %))
+          (#(if-not (= (z/leftmost zloc) barfee-loc) (z/up %) %))
           (z/insert-right (z/node barfee-loc))
           (#(or (global-find-by-node % (z/node zloc))
                 (global-find-by-node % (z/node barfee-loc))))))))

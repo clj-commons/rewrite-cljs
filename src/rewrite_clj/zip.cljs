@@ -76,6 +76,7 @@
 ;; Originally in rewrite-clj.zip.removez
 ;; **********************************
 (def remove rm/remove)
+(def remove-preserve-newline rm/remove-preserve-newline)
 
 
 ;; **********************************

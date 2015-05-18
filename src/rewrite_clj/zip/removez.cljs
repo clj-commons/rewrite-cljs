@@ -8,13 +8,13 @@
 
 (defn- remove-trailing-space
   "Remove all whitespace following a given node."
-  [zloc]
-  (u/remove-right-while zloc ws/whitespace?))
+  [zloc p?]
+  (u/remove-right-while zloc p?))
 
 (defn- remove-preceding-space
   "Remove all whitespace preceding a given node."
-  [zloc]
-  (u/remove-left-while zloc ws/whitespace?))
+  [zloc p?]
+  (u/remove-left-while zloc p?))
 
 (defn remove
   "Remove value at the given zipper location. Returns the first non-whitespace
@@ -37,8 +37,24 @@
    :post [%]}
   (->> (-> (if (or (m/rightmost? zloc)
                    (m/leftmost? zloc))
-             (remove-preceding-space zloc)
+             (remove-preceding-space zloc ws/whitespace?)
              zloc)
-           (remove-trailing-space)
+           (remove-trailing-space ws/whitespace?)
            z/remove)
        (ws/skip-whitespace z/prev)))
+
+(defn remove-preserve-newline
+  "Same as remove but preserves newlines"
+  [zloc]
+  {:pre [zloc]
+   :post [%]}
+  (->> (-> (if (or (m/rightmost? zloc)
+                   (m/leftmost? zloc))
+             (remove-preceding-space zloc #(and (ws/whitespace? %)
+                                                (not (ws/linebreak? %))))
+             zloc)
+           (remove-trailing-space #(and (ws/whitespace? %)
+                                                (not (ws/linebreak? %))))
+           z/remove)
+       (ws/skip-whitespace z/prev)))
+
