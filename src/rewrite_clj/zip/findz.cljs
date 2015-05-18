@@ -3,6 +3,7 @@
   (:require [rewrite-clj.zip.base :as base]
             [rewrite-clj.zip.move :as m]
             [rewrite-clj.node :as node]
+            [rewrite-clj.zip.whitespace :as ws]
             [clojure.zip :as z]))
 
 ;; ## Helpers
@@ -55,6 +56,7 @@
         (take-while identity)
         (take-while (complement m/end?))
         (filter #(and (p? %)
+                      (not (ws/linebreak? %)) ;; Probably not something we'd want to find by pos ?
                       (in-range? (-> % z/node meta) pos)))
         last)))
 

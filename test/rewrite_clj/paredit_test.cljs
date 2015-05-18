@@ -302,9 +302,6 @@ First line
                                 z/root-string))))
 
 
-(map #(+ 1 1) [1 2])
-
-
 (deftest split
   (let [res (-> "[1 2]"
                 z/of-string

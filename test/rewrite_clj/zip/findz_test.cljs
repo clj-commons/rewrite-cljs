@@ -21,6 +21,19 @@
                  z/string))))
 
 
+(deftest find-last-by-pos-multiline
+  (let [sample "
+{:a 1
+ :b 2}" ]
+    (is (= ":a" (-> sample
+                    z/of-string
+                    (f/find-last-by-pos {:row 2 :col 2})
+                    z/string)))
+    (is (= "1"  (-> sample
+                    z/of-string
+                    (f/find-last-by-pos {:row 2 :col 5})
+                    z/string)))))
+
 (deftest find-tag-by-pos
   (is (= "[4 5 6]" (-> "[1 2 3 [4 5 6]]"
                        z/of-string
