@@ -1,7 +1,8 @@
 (ns rewrite-clj.reader
   (:refer-clojure :exclude [peek next])
   (:require [cljs.extended.reader :as r]
-            [goog.string :as gstring]))
+            [goog.string :as gstring]
+            [rewrite-clj.node.protocols :as nd]))
 
 
 
@@ -115,12 +116,17 @@
         col (r/get-column-number reader)
         entry (read-fn reader)]
     (when entry
-      (with-meta
-        entry
-        {:row row
-         :col col
-         :end-row (r/get-line-number reader)
-         :end-col (r/get-column-number reader)}))))
+      (let [end-row (r/get-line-number reader)
+            end-col (r/get-column-number reader)
+            end-col (if (= 0 end-col)
+                      (+ col (count (nd/string entry)))
+                      end-col)] ; TODO: Figure out why numbers are sometimes whacky
+        (with-meta
+          entry
+          {:row row
+           :col col
+           :end-row end-row
+           :end-col end-col})))))
 
 (defn read-repeatedly
   "Call the given function on the given reader until it returns
