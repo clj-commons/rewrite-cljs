@@ -16,7 +16,9 @@
 
 ;; helper
 (defn move-n [loc f n]
-  (->> loc (iterate f) (take n) last))
+  (if (= 0 n)
+    loc
+    (->> loc (iterate f) (take (inc n)) last)))
 
 (defn- top
   [zloc]
@@ -112,17 +114,21 @@
      (nil? (z/up l)) nil
      :else (recur (z/up l) (inc n)))))
 
+
 (defn slurp-forward
   [zloc]
-  (let [[slurpee-loc ins-fn] (or (when (empty-seq? zloc) [(z/right zloc) z/append-child])
+  (let [[slurpee-loc n-ups] (or (when (empty-seq? zloc)
+                                   [(z/right zloc) 0])
                                  (let [[n l] (find-slurpee zloc z/right)]
                                    (when l
-                                     [l #(-> %1 (move-n z/up n) (z/insert-right %2))])))]
+                                     [l n])))]
     (if-not slurpee-loc
       zloc
-      (-> slurpee-loc
-          z/remove
-          (ins-fn (z/node slurpee-loc))
+      (-> zloc
+          (move-n z/up n-ups)
+          (u/remove-right-while ws/whitespace?)
+          u/remove-right
+          (z/append-child (z/node slurpee-loc))
           (#(if (empty-seq? zloc)
               (z/down %)
               (global-find-by-node % (z/node zloc))))))))
@@ -179,7 +185,9 @@
   [zloc t]
   (-> zloc
       (z/insert-left (create-seq-node t nil))
-      z/remove
+      z/left
+      (u/remove-right-while ws/whitespace?)
+      u/remove-right
       (zz/append-child (z/node zloc))
       z/down))
 

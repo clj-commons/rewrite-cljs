@@ -46,4 +46,3 @@
                        z/of-string
                        (f/find-tag-by-pos {:row 1 :col 10} :set)
                        z/string))))
-

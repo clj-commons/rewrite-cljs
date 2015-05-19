@@ -116,6 +116,7 @@ First line
 
 
 (deftest slurp-forward-and-keep-loc-rightmost
+  (.log js/console "slurp-forward-and-keep-loc-rightmost")
   (let [res (-> "[[1 2] 3 4]"
                 z/of-string
                 z/down z/down z/right
@@ -124,6 +125,7 @@ First line
     (is (= "2" (-> res z/string)))))
 
 (deftest slurp-forward-and-keep-loc-leftmost
+  (.log js/console "slurp-forward-and-keep-loc-leftmost")
   (let [res (-> "[[1 2] 3 4]"
                 z/of-string
                 z/down z/down
@@ -162,6 +164,14 @@ First line
                 pe/slurp-forward)]
     (is (= "[[[[[1 2]]] 3] 4]" (-> res z/root-string)))
     (is (= "1" (-> res z/string)))))
+
+(deftest slurp-forward-when-last-is-sexpr
+  (let [res (-> "[1 [2 [3 4]] 5]"
+                z/of-string
+                z/down z/right z/down ;at 2
+                pe/slurp-forward)]
+    (is (= "[1 [2 [3 4] 5]]" (-> res z/root-string))
+        (= "2" (-> res z/string)))))
 
 (deftest slurp-foward-keep-linebreak
   (let [sample "
@@ -293,6 +303,10 @@ First line
                 z/of-string
                 (pe/wrap-around :list))]
     (is (= "1" (-> res z/string)))))
+
+(deftest wrap-around-keeps-newlines
+  (is (= "[[1]\n 2]" (-> (z/of-string "[1\n 2]") z/down (pe/wrap-around :vector) z/root-string))))
+
 
 
 (deftest wrap-around-fn
