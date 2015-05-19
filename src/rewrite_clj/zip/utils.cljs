@@ -67,3 +67,16 @@
                      (update-in [:r] next)
                      (assoc :changed? true))]
       (meta loc))))
+
+
+(defn remove-and-move-up [loc]
+  (let [[node {l :l, ppath :ppath, pnodes :pnodes, rs :r, :as path}] loc]
+    (if (nil? path)
+      (throw (js/Error. "Remove at top"))
+      (if (pos? (count l))
+        (z/up (with-meta [(peek l)
+                    (assoc path :l (pop l) :changed? true)]
+                   (meta loc)))
+        (with-meta [(z/make-node loc (peek pnodes) rs)
+                    (and ppath (assoc ppath :changed? true))]
+                   (meta loc))))))

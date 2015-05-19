@@ -17,15 +17,15 @@ But that is just one of many potentially wickedly cool use-cases for this librar
 - A customized cljs.reader (based on https://github.com/kanaka/clojurescript/blob/cljs_in_cljs/src/cljs/cljs/reader.cljs[clojurescript-in-clojurescript]) that mimics more of clojure.tools.reader
 
 
+[cols="1a,1a,1a"]
+|===
 
-[.float-group]
---
-[.left]
-image::https://travis-ci.org/rundis/rewrite-cljs.svg["Build Status", link="https://travis-ci.org/rundis/rewrite-cljs"]
+| image::https://travis-ci.org/rundis/rewrite-cljs.svg["Build Status", link="https://travis-ci.org/rundis/rewrite-cljs"]
+| image::http://clojars.org/rewrite-cljs/latest-version.svg[link="http://clojars.org/rewrite-cljs"]
+| image::https://badges.gitter.im/Join%20Chat.svg[link="https://gitter.im/rundis/rewrite-cljs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"]
 
-[.left]
-image::http://clojars.org/rewrite-cljs/latest-version.svg[link="http://clojars.org/rewrite-cljs"]
---
+|===
+
 
 
 

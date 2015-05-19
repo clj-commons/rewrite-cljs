@@ -57,6 +57,16 @@
     zloc
     (recur (zz/remove zloc))))
 
+
+(defn create-seq-node [t v]
+  (case t
+    :list (nd/list-node v)
+    :vector (nd/vector-node v)
+    :map (nd/map-node v)
+    :set (nd/set-node v)
+    (throw (js/Error. (str "Unsupported wrap type: " t)))))
+
+
 ;;*****************************
 ;; Paredit functions
 ;;*****************************
@@ -143,7 +153,8 @@
     (if-not slurpee-loc
       zloc
       (-> slurpee-loc
-          z/remove
+          (u/remove-left-while ws/whitespace?)
+          zz/remove
           z/next
           (z/insert-child (z/node slurpee-loc))
           (#(if (empty-seq? zloc)
@@ -153,11 +164,13 @@
 (defn barf-forward
   [zloc]
   (let [barfee-loc (z/rightmost zloc)]
+
     (if-not (z/up zloc)
       zloc
       (-> barfee-loc
-          z/remove
-          (#(if-not (= (z/leftmost zloc) barfee-loc) (z/up %) %))
+          (u/remove-left-while ws/whitespace?)
+          (u/remove-right-while ws/whitespace?)
+          u/remove-and-move-up
           (z/insert-right (z/node barfee-loc))
           (#(or (global-find-by-node % (z/node zloc))
                 (global-find-by-node % (z/node barfee-loc))))))))
@@ -173,13 +186,6 @@
           (#(or (global-find-by-node % (z/node zloc))
                 (global-find-by-node % (z/node barfee-loc))))))))
 
-(defn create-seq-node [t v]
-  (case t
-    :list (nd/list-node v)
-    :vector (nd/vector-node v)
-    :map (nd/map-node v)
-    :set (nd/set-node v)
-    (throw (js/Error. (str "Unsupported wrap type: " t)))))
 
 (defn wrap-around
   [zloc t]

@@ -116,7 +116,6 @@ First line
 
 
 (deftest slurp-forward-and-keep-loc-rightmost
-  (.log js/console "slurp-forward-and-keep-loc-rightmost")
   (let [res (-> "[[1 2] 3 4]"
                 z/of-string
                 z/down z/down z/right
@@ -125,7 +124,6 @@ First line
     (is (= "2" (-> res z/string)))))
 
 (deftest slurp-forward-and-keep-loc-leftmost
-  (.log js/console "slurp-forward-and-keep-loc-leftmost")
   (let [res (-> "[[1 2] 3 4]"
                 z/of-string
                 z/down z/down
@@ -227,6 +225,14 @@ First line
     (is (= "[1 [2 [[3 4]]]]" (-> res z/root-string)))
     (is (= "4" (-> res z/string)))))
 
+(deftest slurp-backward-keep-linebreaks
+  (let [res (-> "[1 2\n [3 4]]"
+                z/of-string
+                z/down z/rightmost z/down
+                pe/slurp-backward)]
+    (is (= "[1\n [2 3 4]]" (-> res z/root-string)))))
+
+
 
 (deftest barf-forward-and-keep-loc
   (let [res (-> "[[1 2 3] 4]"
@@ -272,6 +278,7 @@ First line
 
     (is (= "[[] 1 2]" (-> res z/root-string)))
     (is (= "1" (-> res z/string)))))
+
 
 
 
