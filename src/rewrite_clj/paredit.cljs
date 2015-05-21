@@ -128,38 +128,52 @@
 (defn slurp-forward
   [zloc]
   (let [[slurpee-loc n-ups] (or (when (empty-seq? zloc)
-                                   [(z/right zloc) 0])
-                                 (let [[n l] (find-slurpee zloc z/right)]
-                                   (when l
-                                     [l n])))]
+                                  [(z/right zloc) 0])
+                                (let [[n l] (find-slurpee zloc z/right)]
+                                  (when l
+                                    [l n])))]
     (if-not slurpee-loc
       zloc
-      (-> zloc
-          (move-n z/up n-ups)
-          (u/remove-right-while ws/whitespace?)
-          u/remove-right
-          (z/append-child (z/node slurpee-loc))
-          (#(if (empty-seq? zloc)
-              (z/down %)
-              (global-find-by-node % (z/node zloc))))))))
+      (let [slurper-loc (move-n zloc z/up n-ups)
+            preserves (->> (-> slurper-loc
+                               zz/right
+                               (nodes-by-dir zz/right #(not (= (z/node slurpee-loc) (z/node %)))))
+                           (filter #(or (nd/linebreak? %) (nd/comment? %))))]
+        (-> slurper-loc
+            (u/remove-right-while ws/whitespace-or-comment?)
+            u/remove-right
+            ((partial reduce z/append-child) preserves)
+            (z/append-child (z/node slurpee-loc))
+            (#(if (empty-seq? zloc)
+                (-> % z/down (u/remove-left-while ws/whitespace?))
+                (global-find-by-node % (z/node zloc)))))))))
 
 
 (defn slurp-backward
   [zloc]
-  (let [slurpee-loc (or (when (empty-seq? zloc) (z/left zloc))
+  (if-let [slurpee-loc (or (when (empty-seq? zloc) (z/left zloc))
                         (let [[n l] (find-slurpee zloc z/left)]
                           l))]
 
-    (if-not slurpee-loc
-      zloc
+    (let [preserves (->> (-> slurpee-loc
+                             zz/right
+                             (nodes-by-dir zz/right ws/whitespace-or-comment?))
+                         (filter #(or (nd/linebreak? %) (nd/comment? %))))]
       (-> slurpee-loc
-          (u/remove-left-while ws/whitespace?)
+          (u/remove-left-while ws/whitespace-not-linebreak?)
+          (#(if (and (z/left slurpee-loc)
+                     (not (ws/linebreak? (zz/left %))))
+              (ws/prepend-space %)
+              %))
+          (u/remove-right-while ws/whitespace-or-comment?)
           zz/remove
           z/next
+          ((partial reduce z/insert-child) preserves)
           (z/insert-child (z/node slurpee-loc))
           (#(if (empty-seq? zloc)
-              (z/down %)
-              (global-find-by-node % (z/node zloc))))))))
+              (-> % z/down (u/remove-right-while ws/linebreak?))
+              (global-find-by-node % (z/node zloc))))))
+    zloc))
 
 (defn barf-forward
   [zloc]
@@ -167,24 +181,44 @@
 
     (if-not (z/up zloc)
       zloc
-      (-> barfee-loc
-          (u/remove-left-while ws/whitespace?)
-          (u/remove-right-while ws/whitespace?)
-          u/remove-and-move-up
-          (z/insert-right (z/node barfee-loc))
-          (#(or (global-find-by-node % (z/node zloc))
-                (global-find-by-node % (z/node barfee-loc))))))))
+      (let [preserves (->> (-> barfee-loc
+                               zz/left
+                               (nodes-by-dir zz/left ws/whitespace-or-comment?))
+                           (filter #(or (nd/linebreak? %) (nd/comment? %)))
+                           reverse)]
+        (-> barfee-loc
+            (u/remove-left-while ws/whitespace-or-comment?)
+            (u/remove-right-while ws/whitespace?)
+             u/remove-and-move-up
+            (z/insert-right (z/node barfee-loc))
+            ((partial reduce z/insert-right) preserves)
+            (#(or (global-find-by-node % (z/node zloc))
+                 (global-find-by-node % (z/node barfee-loc)))))))))
+
 
 (defn barf-backward
   [zloc]
   (let [barfee-loc (z/leftmost zloc)]
     (if-not (z/up zloc)
       zloc
-      (-> barfee-loc
-          z/remove
-          (z/insert-left (z/node barfee-loc))
-          (#(or (global-find-by-node % (z/node zloc))
-                (global-find-by-node % (z/node barfee-loc))))))))
+      (let [preserves (->> (-> barfee-loc
+                               zz/right
+                               (nodes-by-dir zz/right ws/whitespace-or-comment?))
+                           (filter #(or (nd/linebreak? %) (nd/comment? %))))]
+        (-> barfee-loc
+            (u/remove-left-while ws/whitespace?)
+            (u/remove-right-while ws/whitespace-or-comment?) ;; probably insert space when on same line !
+            zz/remove
+            (z/insert-left (z/node barfee-loc))
+            ((partial reduce z/insert-left) preserves)
+            (#(or (global-find-by-node % (z/node zloc))
+                  (global-find-by-node % (z/node barfee-loc)))))))))
+
+;;       (-> barfee-loc
+;;           z/remove
+;;           (z/insert-left (z/node barfee-loc))
+;;           (#(or (global-find-by-node % (z/node zloc))
+;;                 (global-find-by-node % (z/node barfee-loc))))))))
 
 
 (defn wrap-around

@@ -12,9 +12,16 @@
   [zloc]
   (some-> zloc z/node node/linebreak?))
 
+(defn whitespace-not-linebreak?
+  [zloc]
+  (and
+   (whitespace? zloc)
+   (not (linebreak? zloc))))
+
 (defn whitespace-or-comment?
   [zloc]
   (some-> zloc z/node node/whitespace-or-comment?))
+
 
 ;; ## Movement
 
@@ -53,13 +60,13 @@
    (z/insert-right zloc (node/spaces n))))
 
 (defn prepend-newline
-  "Prepend a whitespace node representing the given number of spaces (default: 1)."
+  "Prepend a newlines node representing the given number of newlines (default: 1)."
   ([zloc] (prepend-newline zloc 1))
   ([zloc n]
    (z/insert-left zloc (node/newlines n))))
 
 (defn append-newline
-  "Append a whitespace node representing the given number of spaces (default: 1)."
+  "Append a newline node representing the given number of newlines (default: 1)."
   ([zloc] (append-newline zloc 1))
   ([zloc n]
    (z/insert-right zloc (node/newlines n))))

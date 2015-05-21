@@ -22,6 +22,17 @@
   [loc]
   (update-in-path loc :l pop))
 
+
+(defn remove-while
+  [loc p?]
+  "Remove nodes while predicate true. (depth first in reverse!) "
+  (loop [loc zloc]
+    (if-let [ploc (z/prev loc)]
+      (if (p? ploc)
+        (recur (z/remove loc))
+        loc)
+      loc)))
+
 (defn remove-right-while
   "Remove elements to the right of the current zipper location as long as
    the given predicate matches."
@@ -80,3 +91,4 @@
         (with-meta [(z/make-node loc (peek pnodes) rs)
                     (and ppath (assoc ppath :changed? true))]
                    (meta loc))))))
+
