@@ -24,7 +24,7 @@
 
 
 (defn remove-while
-  [loc p?]
+  [zloc p?]
   "Remove nodes while predicate true. (depth first in reverse!) "
   (loop [loc zloc]
     (if-let [ploc (z/prev loc)]
