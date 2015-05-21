@@ -87,31 +87,46 @@
   (= (some-> zloc z/node type) (type (nd/string-node " "))))
 
 
-(defn kill-in-string-node [zloc pos]
-  (let [bounds (-> zloc z/node meta)
-        row-idx (- (:row pos) (:row bounds))
-        sub-length (if-not (= (:row pos) (:row bounds))
-                      (dec (:col pos))
-                      (- (:col pos) (inc (:col bounds))))]
+(defn- kill-in-string-node [zloc pos]
+  (if (= (z/string zloc) "\"\"")
+    (z/remove zloc)
+    (let [bounds (-> zloc z/node meta)
+          row-idx (- (:row pos) (:row bounds))
+          sub-length (if-not (= (:row pos) (:row bounds))
+                       (dec (:col pos))
+                       (- (:col pos) (inc (:col bounds))))]
 
-    (-> (take (inc row-idx) (-> zloc z/node :lines))
-        vec
-        (update-in [row-idx] #(.substring % 0 sub-length))
-        (#(z/replace zloc (nd/string-node %))))))
+      (-> (take (inc row-idx) (-> zloc z/node :lines))
+          vec
+          (update-in [row-idx] #(.substring % 0 sub-length))
+          (#(z/replace zloc (nd/string-node %)))))))
+
+(defn- kill-in-comment-node [zloc pos]
+  (let [col-bounds (-> zloc z/node meta :col)]
+    (if (= (:col pos) col-bounds)
+      (z/remove zloc)
+      (-> zloc
+          (z/replace (-> zloc
+                         z/node
+                         :s
+                         (.substring 0 (- (:col pos) col-bounds 1))
+                         nd/comment-node))
+          (#(if (zz/right %)
+              (zz/insert-right % (nd/newlines 1))
+              %))))))
+
 
 
 (defn kill-at-pos
   "String aware kill"
   [zloc pos]
   (if-let [candidate (z/find-last-by-pos zloc pos)]
-    (if (string-node? candidate)
-      (if (= (z/string candidate) "\"\"")
-        (z/remove candidate)
-        (kill-in-string-node candidate pos))
-      (if (and (empty-seq? candidate)
-               (> (:col pos) (-> candidate z/node meta :col)))
-        (z/remove candidate)
-        (kill candidate)))
+    (cond
+     (string-node? candidate)                             (kill-in-string-node candidate pos)
+     (ws/comment? candidate)                              (kill-in-comment-node candidate pos)
+     (and (empty-seq? candidate)
+          (> (:col pos) (-> candidate z/node meta :col))) (z/remove candidate)
+     :else                                                (kill candidate))
     zloc))
 
 
@@ -213,12 +228,6 @@
             ((partial reduce z/insert-left) preserves)
             (#(or (global-find-by-node % (z/node zloc))
                   (global-find-by-node % (z/node barfee-loc)))))))))
-
-;;       (-> barfee-loc
-;;           z/remove
-;;           (z/insert-left (z/node barfee-loc))
-;;           (#(or (global-find-by-node % (z/node zloc))
-;;                 (global-find-by-node % (z/node barfee-loc))))))))
 
 
 (defn wrap-around

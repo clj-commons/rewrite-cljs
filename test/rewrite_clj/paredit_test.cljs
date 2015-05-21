@@ -69,6 +69,13 @@
     (is (= "5" (-> res z/root-string)))
     (is (= "5" (-> res z/string)))))
 
+
+(deftest kill-inside-comment
+  (is (= "; dill" (-> "; dilldall"
+                      z/of-string
+                      (pe/kill-at-pos {:row 1 :col 7})
+                      z/root-string))))
+
 (deftest kill-at-pos-when-string
   (let [res (-> "(str \"Hello \" \"World!\")"
                 z/of-string

@@ -69,6 +69,7 @@
 (def whitespace-node ws-node/whitespace-node)
 (def newline-node ws-node/newline-node)
 (def spaces ws-node/spaces)
+(def newlines ws-node/newlines)
 (def whitespace? ws-node/whitespace?)
 (def linebreak? ws-node/linebreak?)
 

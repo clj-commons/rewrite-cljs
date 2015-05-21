@@ -12,6 +12,10 @@
   [zloc]
   (some-> zloc z/node node/linebreak?))
 
+(defn comment?
+  [zloc]
+  (some-> zloc z/node node/comment?))
+
 (defn whitespace-not-linebreak?
   [zloc]
   (and
