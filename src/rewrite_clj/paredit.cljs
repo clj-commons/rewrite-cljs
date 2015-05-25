@@ -130,7 +130,7 @@
     zloc))
 
 
-(defn- find-slurpee [zloc f]
+(defn- find-slurpee-up [zloc f]
   (loop [l (z/up zloc)
          n 1]
     (cond
@@ -139,14 +139,17 @@
      (nil? (z/up l)) nil
      :else (recur (z/up l) (inc n)))))
 
+(defn- find-slurpee [zloc f]
+  (if (empty-seq? zloc)
+    [(f zloc) 0]
+    (some-> zloc (find-slurpee-up f) reverse)))
+
+
+
 
 (defn slurp-forward
   [zloc]
-  (let [[slurpee-loc n-ups] (or (when (empty-seq? zloc)
-                                  [(z/right zloc) 0])
-                                (let [[n l] (find-slurpee zloc z/right)]
-                                  (when l
-                                    [l n])))]
+  (let [[slurpee-loc n-ups] (find-slurpee zloc z/right)]
     (if-not slurpee-loc
       zloc
       (let [slurper-loc (move-n zloc z/up n-ups)
@@ -163,13 +166,20 @@
                 (-> % z/down (u/remove-left-while ws/whitespace?))
                 (global-find-by-node % (z/node zloc)))))))))
 
+(defn slurp-forward-fully
+  [zloc]
+  (let [curr-slurpee (some-> zloc (find-slurpee z/right) first)
+        num-slurps (some-> curr-slurpee (nodes-by-dir z/right) count inc)]
+
+    (->> zloc
+          (iterate slurp-forward)
+          (take num-slurps)
+          last)))
+
 
 (defn slurp-backward
   [zloc]
-  (if-let [slurpee-loc (or (when (empty-seq? zloc) (z/left zloc))
-                        (let [[n l] (find-slurpee zloc z/left)]
-                          l))]
-
+  (if-let [[slurpee-loc _] (find-slurpee zloc z/left)]
     (let [preserves (->> (-> slurpee-loc
                              zz/right
                              (nodes-by-dir zz/right ws/whitespace-or-comment?))
@@ -189,6 +199,18 @@
               (-> % z/down (u/remove-right-while ws/linebreak?))
               (global-find-by-node % (z/node zloc))))))
     zloc))
+
+(defn slurp-backward-fully
+  [zloc]
+  (let [curr-slurpee (some-> zloc (find-slurpee z/left) first)
+        num-slurps (some-> curr-slurpee (nodes-by-dir z/left) count inc)]
+
+    (->> zloc
+          (iterate slurp-backward)
+          (take num-slurps)
+          last)))
+
+
 
 (defn barf-forward
   [zloc]

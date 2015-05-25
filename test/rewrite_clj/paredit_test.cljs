@@ -190,6 +190,13 @@ First line
                         pe/slurp-forward
                         z/root-string)))))
 
+(deftest slurp-forward-fully
+  (is (= "[1 [2 3 4]]" (-> (z/of-string "[1 [2] 3 4]")
+                           z/down z/right z/down
+                           pe/slurp-forward-fully
+                           z/root-string))))
+
+
 
 (deftest slurp-backward-and-keep-loc-leftmost
   (let [res (-> "[1 2 [3 4]]"
@@ -238,6 +245,12 @@ First line
                 pe/slurp-backward)]
     (is (= "[1 [2 ;dill\n 3 4]]" (-> res z/root-string)))))
 
+
+(deftest slurp-backward-fully
+  (is (= "[[1 2 3 4] 5]" (-> (z/of-string "[1 2 3 [4] 5]")
+                             z/down z/rightmost z/left z/down
+                             pe/slurp-backward-fully
+                             z/root-string))))
 
 
 (deftest barf-forward-and-keep-loc
