@@ -121,12 +121,14 @@
             end-col (if (= 0 end-col)
                       (+ col (count (nd/string entry)))
                       end-col)] ; TODO: Figure out why numbers are sometimes whacky
-        (with-meta
+        (if (= 0 col) ; why oh why
           entry
-          {:row row
-           :col col
-           :end-row end-row
-           :end-col end-col})))))
+          (with-meta
+            entry
+            {:row row
+             :col col
+             :end-row end-row
+             :end-col end-col}))))))
 
 (defn read-repeatedly
   "Call the given function on the given reader until it returns

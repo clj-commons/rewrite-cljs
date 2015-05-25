@@ -47,8 +47,8 @@
 
 (defn find-last-by-pos
   "Find last node (if more than one node) that is in range of pos and
-   satisfying the given predicate depth first from initial zipper
-   location."
+  satisfying the given predicate depth first from initial zipper
+  location."
   ([zloc pos] (find-last-by-pos zloc pos (constantly true)))
   ([zloc pos p?]
    (->> zloc
@@ -56,7 +56,6 @@
         (take-while identity)
         (take-while (complement m/end?))
         (filter #(and (p? %)
-                      (not (ws/linebreak? %)) ;; Probably not something we'd want to find by pos ?
                       (in-range? (-> % z/node meta) pos)))
         last)))
 
