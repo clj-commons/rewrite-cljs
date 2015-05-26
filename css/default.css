@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 @import url(http://fonts.googleapis.com/css?family=Droid+Sans+Mono:200,300,400);
 @import url(http://fonts.googleapis.com/css?family=Lato:light,regular);
 @import url(http://fonts.googleapis.com/css?family=Ubuntu:300,400,500);
@@ -96,147 +95,11 @@ header h1 a {
 .sidebar li {
     display: block;
     vertical-align: middle;
-=======
-body {
-   font-family: Helvetica, Arial, sans-serif;
-   font-size: 15px;
-}
-
-pre, code {
-   font-family: Monaco, DejaVu Sans Mono, Consolas, monospace;
-   font-size: 9pt;
-   margin: 15px 0;
-}
-
-h2 {
-   font-weight: normal;
-   font-size: 28px;
-   padding: 10px 0 2px 0;
-   margin: 0;
-}
-
-#header, #content, .sidebar {
-   position: fixed;
-}
-
-#header {
-   top: 0;
-   left: 0;
-   right: 0;
-   height: 20px;
-   background: #444;
-   color: #fff;
-   padding: 5px 7px;
-}
-
-#content {
-   top: 30px;
-   right: 0;
-   bottom: 0;
-   overflow: auto;
-   background: #fff;
-   color: #333;
-   padding: 0 18px;
-}
-
-.sidebar {
-   position: fixed;
-   top: 30px;
-   bottom: 0;
-   overflow: auto;
-}
-
-#namespaces {
-   background: #e2e2e2;
-   border-right: solid 1px #cccccc;
-   left: 0;
-   width: 250px;
-}
-
-#vars {
-   background: #f2f2f2;
-   border-right: solid 1px #cccccc;
-   left: 251px;
-   width: 200px;
-}
-
-.namespace-index {
-   left: 251px;
-}
-
-.namespace-docs {
-   left: 452px;
-}
-
-#header {
-   background: -moz-linear-gradient(top, #555 0%, #222 100%);
-   background: -webkit-linear-gradient(top, #555 0%, #333 100%);
-   background: -o-linear-gradient(top, #555 0%, #222 100%);
-   background: -ms-linear-gradient(top, #555 0%, #222 100%);
-   background: linear-gradient(top, #555 0%, #222 100%);
-   box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
-   z-index: 100;
-}
-
-#header h1 {
-   margin: 0;
-   padding: 0;
-   font-size: 12pt;
-   font-weight: lighter;
-   text-shadow: -1px -1px 0px #333;
-}
-
-#header a, .sidebar a {
-   display: block;
-   text-decoration: none;
-}
-
-#header a {
-   color: #fff;
-}
-
-.sidebar a {
-   color: #333;
-}
-
-#header h2 {
-    float: right;
-    font-size: 9pt;
-    font-weight: normal;
-    margin: 3px 3px;
-    padding: 0;
-    color: #bbb;
-}
-
-#header h2 a {
-    display: inline;
-}
-
-.sidebar h3 {
-   margin: 0;
-   padding: 10px 10px 0 10px;
-   font-size: 19px;
-   font-weight: normal;
-}
-
-.sidebar ul {
-   padding: 0.5em 0em;
-   margin: 0;
-}
-
-.sidebar li {
-   display: block;
-   vertical-align: middle;
->>>>>>> 86450558c5a344bd506143892b113d9b626052a4
 }
 
 .sidebar li a, .sidebar li .no-link {
     border-left: 3px solid transparent;
-<<<<<<< HEAD
     padding: 0 15px;
-=======
-    padding: 0 7px;
->>>>>>> 86450558c5a344bd506143892b113d9b626052a4
     white-space: nowrap;
 }
 
@@ -254,10 +117,7 @@ h2 {
 
 .sidebar li a, .sidebar li .tree {
     height: 31px;
-<<<<<<< HEAD
     /* height: 25px; */
-=======
->>>>>>> 86450558c5a344bd506143892b113d9b626052a4
 }
 
 .depth-1 .inner { padding-left: 2px; }
@@ -302,7 +162,6 @@ h2 {
 }
 
 #namespaces li.current a {
-<<<<<<< HEAD
     border-left: 3px solid #a33;
     border-left: 3px solid #7a2518;
     color: #a33;
@@ -344,51 +203,21 @@ h2 {
     color: #ba3925;
     font-family: "Droid Sans Mono","DejaVu Sans Mono","Monospace",monospace;
     font-weight: 300;
-=======
-   border-left: 3px solid #a33;
-   color: #a33;
-}
-
-#vars li.current a {
-   border-left: 3px solid #33a;
-   color: #33a;
-}
-
-#content h3 {
-   font-size: 13pt;
-   font-weight: bold;
->>>>>>> 86450558c5a344bd506143892b113d9b626052a4
 }
 
 .public h3 {
     margin: 0;
-<<<<<<< HEAD
-=======
-    float: left;
-}
-
-.usage {
-    clear: both;
->>>>>>> 86450558c5a344bd506143892b113d9b626052a4
 }
 
 .public {
     margin: 0;
-<<<<<<< HEAD
     border-top: 1px solid #efefef;
-=======
-    border-top: 1px solid #e0e0e0;
->>>>>>> 86450558c5a344bd506143892b113d9b626052a4
     padding-top: 14px;
     padding-bottom: 6px;
 }
 
 .public:last-child {
-<<<<<<< HEAD
     margin-bottom: 20%;
-=======
-   margin-bottom: 20%;
->>>>>>> 86450558c5a344bd506143892b113d9b626052a4
 }
 
 .members .public:last-child {
@@ -415,11 +244,7 @@ h2 {
 }
 
 #content .members .inner h3 {
-<<<<<<< HEAD
     /* font-size: 12pt; */
-=======
-    font-size: 12pt;
->>>>>>> 86450558c5a344bd506143892b113d9b626052a4
 }
 
 .members .public {
@@ -437,13 +262,7 @@ h4.type,
 h4.dynamic,
 h4.added,
 h4.deprecated {
-<<<<<<< HEAD
     margin: 3px 10px 10spx 0;
-=======
-    float: left;
-    margin: 3px 10px 15px 0;
-    font-size: 15px;
->>>>>>> 86450558c5a344bd506143892b113d9b626052a4
     font-weight: bold;
     font-variant: small-caps;
 }
@@ -452,15 +271,9 @@ h4.deprecated {
 .public h4.dynamic,
 .public h4.added,
 .public h4.deprecated {
-<<<<<<< HEAD
     font-weight: bold;
     /* margin: 3px 0 0 10px; */
     font-size: 0.7em;
-=======
-    font-size: 13px;
-    font-weight: bold;
-    margin: 3px 0 0 10px;
->>>>>>> 86450558c5a344bd506143892b113d9b626052a4
 }
 
 .members h4.type,
@@ -486,11 +299,7 @@ h4.deprecated {
 }
 
 .namespace {
-<<<<<<< HEAD
     margin-bottom: 40px;
-=======
-    margin-bottom: 30px;
->>>>>>> 86450558c5a344bd506143892b113d9b626052a4
 }
 
 .namespace:last-child {
@@ -499,13 +308,7 @@ h4.deprecated {
 
 .index {
     padding: 0;
-<<<<<<< HEAD
     margin: 15px 0;
-=======
-    font-size: 80%;
-    margin: 15px 0;
-    line-height: 16px;
->>>>>>> 86450558c5a344bd506143892b113d9b626052a4
 }
 
 .index * {
@@ -520,7 +323,6 @@ h4.deprecated {
     padding-right: 5px;
 }
 
-<<<<<<< HEAD
 .index li a {
     color: #333;
     font-family: "Droid Sans Mono","DejaVu Sans Mono","Monospace",monospace;
@@ -529,25 +331,10 @@ h4.deprecated {
     font-weight: 300;
 }
 
-=======
->>>>>>> 86450558c5a344bd506143892b113d9b626052a4
 .index ul {
     padding-left: 0;
 }
 
-<<<<<<< HEAD
-=======
-.usage code {
-    display: block;
-    color: #008;
-    margin: 2px 0;
-}
-
-.usage code:first-child {
-    padding-top: 10px;
-}
-
->>>>>>> 86450558c5a344bd506143892b113d9b626052a4
 p {
     margin: 15px 0;
 }
@@ -574,49 +361,28 @@ p {
 }
 
 .markdown {
-<<<<<<< HEAD
     /* line-height: 18px; */
     /* font-size: 16px; */
 }
 
 .doc, .public, .namespace .index {
     max-width: 780px;
-=======
-    line-height: 18px;
-    font-size: 14px;
-}
-
-.doc, .public, .namespace .index {
-    max-width: 680px;
->>>>>>> 86450558c5a344bd506143892b113d9b626052a4
     overflow-x: visible;
 }
 
 .markdown code, .src-link a {
-<<<<<<< HEAD
     border-radius: 2px;
     font-size: 0.8em;
     color: #444;
-=======
-    background: #f6f6f6;
-    border: 1px solid #e4e4e4;
-    border-radius: 2px;
->>>>>>> 86450558c5a344bd506143892b113d9b626052a4
 }
 
 .markdown pre {
     background: #f4f4f4;
     border: 1px solid #e0e0e0;
-<<<<<<< HEAD
     /* border-radius: 2px; */
     padding: 5px 5px;
     border-top: 1px solid #e0e0e0;
     border-bottom: 1px solid #e0e0e0;
-=======
-    border-radius: 2px;
-    padding: 5px 10px;
-    margin: 0 10px;
->>>>>>> 86450558c5a344bd506143892b113d9b626052a4
 }
 
 .markdown pre code {
@@ -661,11 +427,7 @@ p {
 .doc abbr {
     border-bottom: 1px dotted #333;
     font-variant: none
-<<<<<<< HEAD
                       cursor: help;
-=======
-    cursor: help;
->>>>>>> 86450558c5a344bd506143892b113d9b626052a4
 }
 
 .src-link {
@@ -673,11 +435,7 @@ p {
 }
 
 .src-link a {
-<<<<<<< HEAD
     /* font-size: 70%; */
-=======
-    font-size: 70%;
->>>>>>> 86450558c5a344bd506143892b113d9b626052a4
     padding: 1px 4px;
     text-decoration: none;
     color: #5555bb;
