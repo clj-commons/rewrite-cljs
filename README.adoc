@@ -34,14 +34,15 @@ But that is just one of many potentially wickedly cool use-cases for this librar
 ## Usage
 
 The aim is that this lib should work as closely as possible as it's original Clojure counterpart.
-I'll try to document the individual differences eventually, but for now check out the docs for the
-original lib
+I'll try to document/highlight the individual differences eventually.
 
 
 .Documentation
-- https://github.com/xsc/rewrite-clj[rewrite-clj - README]
-- http://xsc.github.io/rewrite-clj[rewrite-clj - API docs]
+- http://rundis.github.io/rewrite-cljs[API docs]
 
+
+.Resources
+- https://github.com/xsc/rewrite-clj[rewrite-clj - README]
 
 ### Sample
 Here's a little teaser on the sort of things you can do with the zipper features.

@@ -26,12 +26,11 @@
 (defn remove-while
   [zloc p?]
   "Remove nodes while predicate true. (depth first in reverse!) "
-  (loop [loc zloc]
-    (if-let [ploc (z/prev loc)]
-      (if (p? ploc)
-        (recur (z/remove loc))
-        loc)
-      loc)))
+  (loop [zloc zloc]
+    (let [ploc (z/prev zloc)]
+      (if-not (and ploc (p? ploc))
+        zloc
+        (recur (z/remove zloc))))))
 
 (defn remove-right-while
   "Remove elements to the right of the current zipper location as long as

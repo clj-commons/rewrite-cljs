@@ -9,22 +9,25 @@
                  [org.clojure/clojurescript "0.0-2202"
                   :exclusions [org.apache.ant/ant]]]
 
-  :hooks [leiningen.cljsbuild]
-  :plugins [[lein-cljsbuild "1.0.3"]
-            [com.cemerick/clojurescript.test "0.2.3"]]
 
-  :cljsbuild {
-              :builds {:dev
-                       {:source-paths ["src"]
-                        :compiler {;:output-dir "target/out"
-                                   :output-to "target/main.js"
-                                   :source-map "target/main.js.map"
-                                   ;:optimizations :whitespace
-                                   :pretty-print true}}
-                       :test
-                       {:source-paths ["src" "test"]
-                        :notify-command ["phantomjs" :cljs.test/runner "target/out/unit-test.js"]
-                        :compiler {:output-to "target/out/unit-test.js"
-                                   :optimizations :whitespace
-                                   :pretty-print true}}}}
-  :aliases {"auto-test" ["do" "clean," "cljsbuild" "auto" "test"]})
+  :profiles {:dev
+             {:plugins [[lein-cljsbuild "1.0.3"]
+                        [com.cemerick/clojurescript.test "0.3.3"]]
+
+              :cljsbuild {
+                          :builds {:test
+                                   {:source-paths ["src" "test"]
+                                    :notify-command ["phantomjs" :cljs.test/runner "target/out/unit-test.js"]
+                                    :compiler {:output-to "target/out/unit-test.js"
+                                               :optimizations :whitespace
+                                               :pretty-print true}}}}}
+
+           :doc {:plugins  [[funcool/codeina "0.1.0"
+                             :exclusions [org.clojure/clojure]]]
+                 :codeina {:sources ["src"]
+                           :language :clojurescript
+                           :exclude [cljs.extended.reader]
+                           :src-uri "https://github.com/rundis/rewrite-cljs/blob/master/"
+                           :src-uri-prefix "#L"}}}
+
+  :aliases {"auto-test" ["with-profile" "dev" "do" "clean," "cljsbuild" "auto" "test"]})
