@@ -12,7 +12,7 @@
 </ul></div></div><div class="src-link"><a href="https://github.com/rundis/rewrite-cljs/blob/master/src/rewrite_clj/paredit.cljs#L435">view source</a></div></div><div class="public anchor" id="var-kill"><h3><a href="#var-kill">kill</a></h3><div class="usage"><code>(kill zloc)</code></div><div class="doc"><div class="markdown"><p>Kill all sibling nodes to the right of the current node</p>
 <ul>
   <li>[1 2| 3 4] =&gt; [1 2|]</li>
-</ul></div></div><div class="src-link"><a href="https://github.com/rundis/rewrite-cljs/blob/master/src/rewrite_clj/paredit.cljs#L88">view source</a></div></div><div class="public anchor" id="var-kill-at-pos"><h3><a href="#var-kill-at-pos">kill-at-pos</a></h3><div class="usage"><code>(kill-at-pos zloc pos)</code></div><div class="doc"><div class="markdown"><p>In string and comment aware kill</p><p>Perform kill for given position <code>pos</code> Like kill, but:</p>
+</ul></div></div><div class="src-link"><a href="https://github.com/rundis/rewrite-cljs/blob/master/src/rewrite_clj/paredit.cljs#L88">view source</a></div></div><div class="public anchor" id="var-kill-at-pos"><h3><a href="#var-kill-at-pos">kill-at-pos</a></h3><div class="usage"><code>(kill-at-pos zloc pos)</code></div><div class="doc"><div class="markdown"><p>In string and comment aware kill</p><p>Perform kill for given position <code>pos</code> Like <a href="rewrite-clj.paredit.html#var-kill">kill</a>, but:</p>
 <ul>
   <li>if inside string kills to end of string and stops there</li>
   <li>If inside comment kills to end of line (not including linebreak!)</li>
