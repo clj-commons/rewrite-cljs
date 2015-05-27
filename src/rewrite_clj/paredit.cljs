@@ -311,7 +311,7 @@
 (defn wrap-fully-forward-slurp
   "Create a new seq node of type `t` left of `zloc` then slurp fully into the new node
 
-  - `[1 2 3 4] => [1 [2 3 4]]`"
+  - `[1 |2 3 4] => [1 [|2 3 4]]`"
   [zloc t]
   (-> zloc
       (z/insert-left (create-seq-node t nil))
