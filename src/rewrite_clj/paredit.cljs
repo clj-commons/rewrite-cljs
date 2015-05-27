@@ -133,7 +133,7 @@
 (defn kill-at-pos
   "In string and comment aware kill
 
-  Perform kill for given position `pos` Like kill, but:
+  Perform kill for given position `pos` Like [[kill]], but:
 
   - if inside string kills to end of string and stops there
   - If inside comment kills to end of line (not including linebreak!)
