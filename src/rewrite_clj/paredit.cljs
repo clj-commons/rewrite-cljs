@@ -138,7 +138,7 @@
   - if inside string kills to end of string and stops there
   - If inside comment kills to end of line (not including linebreak!)
 
-  `pos` should provide `{:row :ch }` which are relative to the start of the given form the zipper represents
+  `pos` should provide `{:row :col }` which are relative to the start of the given form the zipper represents
   `zloc` must be positioned at a node previous (given depth first) to the node at given pos"
   [zloc pos]
   (if-let [candidate (z/find-last-by-pos zloc pos)]
@@ -399,7 +399,7 @@
 
   - if inside string splits string into two strings
 
-  `pos` should provide `{:row :ch }` which are relative to the start of the given form the zipper represents
+  `pos` should provide `{:row :col }` which are relative to the start of the given form the zipper represents
   `zloc` must be positioned at a node previous (given depth first) to the node at given pos"
   [zloc pos]
   (if-let [candidate (z/find-last-by-pos zloc pos)]
