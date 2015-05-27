@@ -3,7 +3,7 @@
             [rewrite-clj.node.forms :refer [FormsNode]]
             [rewrite-clj.node.keyword :refer [KeywordNode]]
             [rewrite-clj.node.quote :refer [QuoteNode]]
-            [rewrite-clj.node.stringz :refer [StringNode]]
+            [rewrite-clj.node.stringz :refer [StringNode string-node]]
             [rewrite-clj.node.uneval :refer [UnevalNode]]
             [rewrite-clj.node.meta :refer [MetaNode meta-node]]
             [rewrite-clj.node.protocols :refer [NodeCoerceable coerce]]
@@ -39,6 +39,14 @@
   (coerce [n]
     (node-with-meta
      (token-node n)
+     n)))
+
+;; Number
+(extend-protocol NodeCoerceable
+  string
+  (coerce [n]
+    (node-with-meta
+     (string-node n)
      n)))
 
 
