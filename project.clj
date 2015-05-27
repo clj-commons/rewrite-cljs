@@ -27,7 +27,7 @@
                  :codeina {:sources ["src"]
                            :language :clojurescript
                            :exclude [cljs.extended.reader]
-                           :src-uri "https://github.com/rundis/rewrite-cljs/blob/master/"
-                           :src-uri-prefix "#L"}}}
+                           :src-dir-uri "https://github.com/rundis/rewrite-cljs/blob/master/"
+                           :src-linenum-anchor-prefix "L"}}}
 
   :aliases {"auto-test" ["with-profile" "dev" "do" "clean," "cljsbuild" "auto" "test"]})
