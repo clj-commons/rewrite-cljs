@@ -308,6 +308,15 @@
       (zz/append-child (z/node zloc))
       z/down))
 
+(defn wrap-fully-forward-slurp
+  "Create a new seq node of type `t` left of `zloc` then slurp fully into the new node
+
+  - `[1 2 3 4] => [1 [2 3 4]]`"
+  [zloc t]
+  (-> zloc
+      (z/insert-left (create-seq-node t nil))
+      z/left
+      slurp-forward-fully))
 
 (def splice
   "See rewrite-clj.zip/splice"
@@ -338,7 +347,9 @@
   [zloc]
   (if (and (z/up zloc) (not (z/leftmost? zloc)))
     (splice-killing (z/left zloc) u/remove-right-while)
-    (z/remove zloc)))
+    (if (z/up zloc)
+      (-> zloc z/up z/remove)
+      zloc)))
 
 
 (defn split
@@ -362,20 +373,6 @@
               (#(or (global-find-by-node % (z/node zloc))
                     (global-find-by-node % (last lefts))))))))))
 
-
-;; (defn- ^{:no-doc true} kill-in-string-node [zloc pos]
-;;   (if (= (z/string zloc) "\"\"")
-;;     (z/remove zloc)
-;;     (let [bounds (-> zloc z/node meta)
-;;           row-idx (- (:row pos) (:row bounds))
-;;           sub-length (if-not (= (:row pos) (:row bounds))
-;;                        (dec (:col pos))
-;;                        (- (:col pos) (inc (:col bounds))))]
-
-;;       (-> (take (inc row-idx) (-> zloc z/node :lines))
-;;           vec
-;;           (update-in [row-idx] #(.substring % 0 sub-length))
-;;           (#(z/replace zloc (nd/string-node %)))))))
 
 (defn- ^{:no-doc true} split-string [zloc pos]
   (let [bounds (-> zloc z/node meta)
