@@ -399,6 +399,12 @@ First line
                            z/root-string))))
 
 
+(deftest split-at-pos-when-string
+  (is (= "(\"Hello \" \"World\")" (-> (z/of-string "(\"Hello World\")")
+                                      (pe/split-at-pos {:row 1 :col 7})
+                                      z/root-string))))
+
+
 (deftest join-simple
   (let [res (-> "[1 2] [3 4]"
                 z/of-string
@@ -421,6 +427,13 @@ First line
                 z/down zz/right
                 pe/join)]
     (is (= expected (-> res z/root-string)))))
+
+
+(deftest join-strings
+  (is (= "(\"Hello World\")" (-> (z/of-string "(\"Hello \" \"World\")")
+                        z/down z/rightmost
+                        pe/join
+                        z/root-string))))
 
 
 
