@@ -20,13 +20,15 @@
   "Remove value at the given zipper location. Returns the first non-whitespace
    node that would have preceded it in a depth-first walk. Will remove whitespace
    appropriately.
-       [1  2  3]   => [1  3]
-       [1 2]       => [1]
-       [1 2]       => [2]
-       [1]         => []
-       [  1  ]     => []
-       [1 [2 3] 4] => [1 [2 3]]
-       [1 [2 3] 4] => [[2 3] 4]
+
+  - `[1  2  3]   => [1  3]`
+  - `[1 2]       => [1]`
+  - `[1 2]       => [2]`
+  - `[1]         => []`
+  - `[  1  ]     => []`
+  - `[1 [2 3] 4] => [1 [2 3]]`
+  - `[1 [2 3] 4] => [[2 3] 4]`
+
    If a node is located rightmost, both preceding and trailing spaces are removed,
    otherwise only trailing spaces are touched. This means that a following element
    (no matter whether on the same line or not) will end up in the same position
