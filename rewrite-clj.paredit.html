@@ -5,9 +5,10 @@
 </ul></div></div></div><div class="public anchor" id="var-barf-forward"><h3><a href="#var-barf-forward">barf-forward</a></h3><div class="usage"><code>(barf-forward zloc)</code></div><div class="doc"><div class="markdown"><p>Push out the rightmost node of the current S-expression into outer right form</p>
 <ul>
   <li><code>[1 2 [|3 4] 5] =&gt; [1 2 [|3] 4 5]</code></li>
-</ul></div></div></div><div class="public anchor" id="var-join"><h3><a href="#var-join">join</a></h3><div class="usage"><code>(join zloc)</code></div><div class="doc"><div class="markdown"><p>Join S-expression to the left and right of current loc</p>
+</ul></div></div></div><div class="public anchor" id="var-join"><h3><a href="#var-join">join</a></h3><div class="usage"><code>(join zloc)</code></div><div class="doc"><div class="markdown"><p>Join S-expression to the left and right of current loc. Also works for strings.</p>
 <ul>
   <li><code>[[1 2] |[3 4]] =&gt; [[1 2 3 4]]</code></li>
+  <li>`[&ldquo;Hello &rdquo; | &ldquo;World&rdquo;] =&gt; [&ldquo;Hello World&rdquo;]</li>
 </ul></div></div></div><div class="public anchor" id="var-kill"><h3><a href="#var-kill">kill</a></h3><div class="usage"><code>(kill zloc)</code></div><div class="doc"><div class="markdown"><p>Kill all sibling nodes to the right of the current node</p>
 <ul>
   <li>[1 2| 3 4] =&gt; [1 2|]</li>
@@ -15,7 +16,7 @@
 <ul>
   <li>if inside string kills to end of string and stops there</li>
   <li>If inside comment kills to end of line (not including linebreak!)</li>
-</ul><p><code>pos</code> should provide <code>{:row :ch }</code> which are relative to the start of the given form the zipper represents</p></div></div></div><div class="public anchor" id="var-move-to-prev"><h3><a href="#var-move-to-prev">move-to-prev</a></h3><div class="usage"><code>(move-to-prev zloc)</code></div><div class="doc"><div class="markdown"><p>Move node at current location to the position of previous location given a depth first traversal</p>
+</ul><p><code>pos</code> should provide <code>{:row :ch }</code> which are relative to the start of the given form the zipper represents <code>zloc</code> must be positioned at a node previous (given depth first) to the node at given pos</p></div></div></div><div class="public anchor" id="var-move-to-prev"><h3><a href="#var-move-to-prev">move-to-prev</a></h3><div class="usage"><code>(move-to-prev zloc)</code></div><div class="doc"><div class="markdown"><p>Move node at current location to the position of previous location given a depth first traversal</p>
 <ul>
   <li><code>(+ 1 (+ 2 |3) 4) =&gt; (+ 1 (+ |3 2) 4)</code></li>
   <li><code>(+ 1 (+ 2 3) |4) =&gt; (+ 1 (+ 2 3 |4))</code></li>
@@ -34,7 +35,10 @@
 </ul></div></div></div><div class="public anchor" id="var-splice"><h3><a href="#var-splice">splice</a></h3><div class="usage"></div><div class="doc"><div class="markdown"><p>See rewrite-clj.zip/splice</p></div></div></div><div class="public anchor" id="var-split"><h3><a href="#var-split">split</a></h3><div class="usage"><code>(split zloc)</code></div><div class="doc"><div class="markdown"><p>Split current s-sexpression in two at given node <code>zloc</code></p>
 <ul>
   <li><code>[1 2 |3 4 5] =&gt; [1 2 3] [4 5]</code></li>
-</ul></div></div></div><div class="public anchor" id="var-wrap-around"><h3><a href="#var-wrap-around">wrap-around</a></h3><div class="usage"><code>(wrap-around zloc t)</code></div><div class="doc"><div class="markdown"><p>Wrap current node with a given type <code>t</code> (:vector, :list, :set, :map :fn)</p>
+</ul></div></div></div><div class="public anchor" id="var-split-at-pos"><h3><a href="#var-split-at-pos">split-at-pos</a></h3><div class="usage"><code>(split-at-pos zloc pos)</code></div><div class="doc"><div class="markdown"><p>In string aware split</p><p>Perform split at given position <code>pos</code> Like split, but:</p>
+<ul>
+  <li>if inside string splits string into two strings</li>
+</ul><p><code>pos</code> should provide <code>{:row :ch }</code> which are relative to the start of the given form the zipper represents <code>zloc</code> must be positioned at a node previous (given depth first) to the node at given pos</p></div></div></div><div class="public anchor" id="var-wrap-around"><h3><a href="#var-wrap-around">wrap-around</a></h3><div class="usage"><code>(wrap-around zloc t)</code></div><div class="doc"><div class="markdown"><p>Wrap current node with a given type <code>t</code> (:vector, :list, :set, :map :fn)</p>
 <ul>
   <li><code>|123 =&gt; [|123] ; given :vector</code></li>
   <li><code>|[1 [2]] =&gt; [|[1 [2]]]</code></li>
