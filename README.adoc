@@ -79,6 +79,7 @@ Here's a little teaser on the sort of things you can do with the zipper features
 
 
 ## Limitations and omissions
+
 * There is no support for parsing files (duh)
 * cljs.extended.reader which is used for reading edn/clojure/clojurescript, has lot of limitations. Pls don't be surprised
 when encountering errors during reading of perhaps legal but hopefully infrequently used language constructs.
@@ -86,6 +87,9 @@ when encountering errors during reading of perhaps legal but hopefully infrequen
 ** Nice printing of nodes - Not implemented
 ** https://github.com/xsc/rewrite-clj/blob/master/src/rewrite_clj/zip/subedit.clj[zip subedit support] - Not implemented (YET!)
 
+WARNING: The reader makes a best effort of capturing positional metadata {:row :col :end-row :end-col} for all nodes.
+As long as you are only traversing the nodes you should be fine using the meta data and functions that depend on them (example zip/find-last-by-pos).
+However if you perform any form of rewriting the meta-data can't be trusted any longer. Not sure how to address that tbh. Pull requests are more than welcome !
 
 
 ## Rationale

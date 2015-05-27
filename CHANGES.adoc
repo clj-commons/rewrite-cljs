@@ -1,7 +1,9 @@
 ## Changelog
 
 
-### NOT RELEASED YET
-
-Port initiated from version 0.4.12 of rewrite-clj. Check out it's https://github.com/xsc/rewrite-clj/blob/master/CHANGES.md[changelog].
+### 0.1.0
+- Initial release
+- Port initiated from version 0.4.12 of rewrite-clj. Check out it's https://github.com/xsc/rewrite-clj/blob/master/CHANGES.md[changelog].
+  Not all functions have been ported (most notably zip subedit support and printing of nodes are missing)
+- Also added a paredit namespace for common pareedit features that modifies the source (slurp, barf, kill, join, split etc)
 
