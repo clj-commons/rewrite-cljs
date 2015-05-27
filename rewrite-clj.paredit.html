@@ -32,7 +32,13 @@
 </ul></div></div></div><div class="public anchor" id="var-slurp-forward-fully"><h3><a href="#var-slurp-forward-fully">slurp-forward-fully</a></h3><div class="usage"><code>(slurp-forward-fully zloc)</code></div><div class="doc"><div class="markdown"><p>Pull in all right outer-nodes into current S-expression, but only the ones at the same level as the the first one.</p>
 <ul>
   <li><code>[1 2 [|3] 4 5] =&gt; [1 2 [|3 4 5]]</code></li>
-</ul></div></div></div><div class="public anchor" id="var-splice"><h3><a href="#var-splice">splice</a></h3><div class="usage"></div><div class="doc"><div class="markdown"><p>See rewrite-clj.zip/splice</p></div></div></div><div class="public anchor" id="var-split"><h3><a href="#var-split">split</a></h3><div class="usage"><code>(split zloc)</code></div><div class="doc"><div class="markdown"><p>Split current s-sexpression in two at given node <code>zloc</code></p>
+</ul></div></div></div><div class="public anchor" id="var-splice"><h3><a href="#var-splice">splice</a></h3><div class="usage"></div><div class="doc"><div class="markdown"><p>See rewrite-clj.zip/splice</p></div></div></div><div class="public anchor" id="var-splice-killing-backward"><h3><a href="#var-splice-killing-backward">splice-killing-backward</a></h3><div class="usage"><code>(splice-killing-backward zloc)</code></div><div class="doc"><div class="markdown"><p>Remove left siblings of current given node in S-Expression and unwrap remaining into enclosing S-expression</p>
+<ul>
+  <li><code>(foo (let ((x 5)) |(sqrt n)) bar) =&gt; (foo (sqrt n) bar)</code></li>
+</ul></div></div></div><div class="public anchor" id="var-splice-killing-forward"><h3><a href="#var-splice-killing-forward">splice-killing-forward</a></h3><div class="usage"><code>(splice-killing-forward zloc)</code></div><div class="doc"><div class="markdown"><p>Remove current given node and its right siblings in S-Expression and unwrap remaining into enclosing S-expression</p>
+<ul>
+  <li><code>(a (b c |d e) f) =&gt; (a b |c f)</code></li>
+</ul></div></div></div><div class="public anchor" id="var-split"><h3><a href="#var-split">split</a></h3><div class="usage"><code>(split zloc)</code></div><div class="doc"><div class="markdown"><p>Split current s-sexpression in two at given node <code>zloc</code></p>
 <ul>
   <li><code>[1 2 |3 4 5] =&gt; [1 2 3] [4 5]</code></li>
 </ul></div></div></div><div class="public anchor" id="var-split-at-pos"><h3><a href="#var-split-at-pos">split-at-pos</a></h3><div class="usage"><code>(split-at-pos zloc pos)</code></div><div class="doc"><div class="markdown"><p>In string aware split</p><p>Perform split at given position <code>pos</code> Like split, but:</p>
