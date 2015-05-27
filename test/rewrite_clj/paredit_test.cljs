@@ -341,6 +341,22 @@ First line
                                 (pe/wrap-around :list)
                                 z/root-string))))
 
+(deftest splice-killing-backward []
+  (let [res (-> (z/of-string "(foo (let ((x 5)) (sqrt n)) bar)")
+             z/down z/right z/down z/right z/right
+             pe/splice-killing-backward)]
+    (is (= "(foo (sqrt n) bar)" (z/root-string res)))
+    (is (= "(sqrt n)" (z/string res)))))
+
+
+(deftest splice-killing-forward []
+  (let [res (-> (z/of-string "(a (b c d e) f)")
+             z/down z/right z/down z/right z/right
+             pe/splice-killing-forward)]
+    (is (= "(a b c f)" (z/root-string res)))
+    (is (= "c" (z/string res)))))
+
+
 
 (deftest split
   (let [res (-> "[1 2]"

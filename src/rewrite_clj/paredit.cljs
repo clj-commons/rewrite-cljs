@@ -314,6 +314,32 @@
   z/splice)
 
 
+(defn- ^{:no-doc true} splice-killing
+  [zloc f]
+  (if-not (z/up zloc)
+    zloc
+    (-> zloc
+        (f (constantly true))
+        z/up
+        splice
+        (global-find-by-node (z/node zloc)))))
+
+(defn splice-killing-backward
+  "Remove left siblings of current given node in S-Expression and unwrap remaining into enclosing S-expression
+
+  - `(foo (let ((x 5)) |(sqrt n)) bar) => (foo (sqrt n) bar)`"
+  [zloc]
+  (splice-killing zloc u/remove-left-while))
+
+(defn splice-killing-forward
+  "Remove current given node and its right siblings in S-Expression and unwrap remaining into enclosing S-expression
+
+  - `(a (b c |d e) f) => (a b |c f)`"
+  [zloc]
+  (if (and (z/up zloc) (not (z/leftmost? zloc)))
+    (splice-killing (z/left zloc) u/remove-right-while)
+    (z/remove zloc)))
+
 
 (defn split
   "Split current s-sexpression in two at given node `zloc`
