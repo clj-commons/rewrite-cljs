@@ -337,13 +337,36 @@
                     (global-find-by-node % (last lefts))))))))))
 
 
+;; (defn- ^{:no-doc true} kill-in-string-node [zloc pos]
+;;   (if (= (z/string zloc) "\"\"")
+;;     (z/remove zloc)
+;;     (let [bounds (-> zloc z/node meta)
+;;           row-idx (- (:row pos) (:row bounds))
+;;           sub-length (if-not (= (:row pos) (:row bounds))
+;;                        (dec (:col pos))
+;;                        (- (:col pos) (inc (:col bounds))))]
+
+;;       (-> (take (inc row-idx) (-> zloc z/node :lines))
+;;           vec
+;;           (update-in [row-idx] #(.substring % 0 sub-length))
+;;           (#(z/replace zloc (nd/string-node %)))))))
+
 (defn- ^{:no-doc true} split-string [zloc pos]
-  (-> zloc
-      (z/edit #(-> % (.substring 0 (dec (:col pos)))))
-      (z/insert-right (-> zloc
-                          z/node
-                          nd/sexpr
-                          (.substring (dec (:col pos)))))))
+  (let [bounds (-> zloc z/node meta)
+        row-idx (- (:row pos) (:row bounds))
+        lines (-> zloc z/node :lines)
+        split-col (if-not (= (:row pos) (:row bounds))
+                    (dec (:col pos))
+                    (- (:col pos) (inc (:col bounds))))]
+    (-> zloc
+        (z/replace (nd/string-node
+                    (-> (take (inc row-idx) lines)
+                        vec
+                        (update-in [row-idx] #(.substring % 0 split-col)))))
+        (z/insert-right (nd/string-node
+                         (-> (drop row-idx lines)
+                               vec
+                             (update-in [0] #(.substring % split-col))))))))
 
 
 (defn split-at-pos

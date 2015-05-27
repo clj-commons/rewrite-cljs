@@ -401,7 +401,7 @@ First line
 
 (deftest split-at-pos-when-string
   (is (= "(\"Hello \" \"World\")" (-> (z/of-string "(\"Hello World\")")
-                                      (pe/split-at-pos {:row 1 :col 7})
+                                      (pe/split-at-pos {:row 1 :col 9})
                                       z/root-string))))
 
 
