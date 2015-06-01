@@ -23,12 +23,17 @@
           (+ 1 c (count nspace))
           c))))
   (string [_]
-    (str (if namespaced? ":")
-         (pr-str k)))
+    (let [v (pr-str k)]
+      (if (and namespaced? (= -1 (.indexOf v "/")))
+        (str ":" v)
+        v)))
 
   Object
   (toString [this]
     (node/string this)))
+
+
+
 
 ;; TODO
 ;;(node/make-printable! KeywordNode)
