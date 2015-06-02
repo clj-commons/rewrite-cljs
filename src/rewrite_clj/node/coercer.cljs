@@ -6,6 +6,7 @@
             [rewrite-clj.node.stringz :refer [StringNode string-node]]
             [rewrite-clj.node.uneval :refer [UnevalNode]]
             [rewrite-clj.node.meta :refer [MetaNode meta-node]]
+            [rewrite-clj.node.fn :refer [FnNode]]
             [rewrite-clj.node.protocols :refer [NodeCoerceable coerce]]
             [rewrite-clj.node.reader-macro :refer [ReaderNode ReaderMacroNode DerefNode]]
             [rewrite-clj.node.seq :refer [SeqNode vector-node list-node set-node map-node]]
@@ -119,6 +120,7 @@
 (extend-protocol NodeCoerceable
   CommentNode     (coerce [v] v)
   FormsNode       (coerce [v] v)
+  FnNode          (coerce [v] v)
   ;IntNode         (coerce [v] v)
   KeywordNode     (coerce [v] v)
   MetaNode        (coerce [v] v)
