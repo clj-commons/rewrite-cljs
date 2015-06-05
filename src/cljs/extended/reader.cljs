@@ -14,7 +14,7 @@
 
 (def specials '#{if def fn* do let* loop* letfn* throw try* recur new set! ns deftype* defrecord* . js* & quote})
 
-
+(def symbol-pattern (re-pattern "^[:]?([^0-9/].*/)?([^0-9/][^/]*)$"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; reader protocols
@@ -380,6 +380,8 @@
         (aget matches 0)
         matches))))
 
+
+
 (defn- match-number
   [s]
   (cond
@@ -606,20 +608,20 @@
 ;; based on matchSymol in clojure/lang/LispReader.java
 (defn read-keyword
   [reader initch]
-  (let [token (read-token reader (read-char reader))
-        parts (string/split token #"/")
-        name (last parts)
-        ns (if (> (count parts) 1) (string/join \/ (butlast parts)))
-        issue (cond
-               (identical? (last ns) \:) "namespace can't ends with \":\""
-               (identical? (last name) \:) "name can't end with \":\""
-               (identical? (last name) \/) "name can't end with \"/\""
-               (> (count (string/split token #"::")) 1) "name can't contain \"::\"")]
-    (if issue
-      (reader-error reader "Invalid token (" issue "): " token)
-      (if (and (not ns) (identical? (first name) \:))
-        (keyword *ns-sym* (apply str (rest name)))    ;; namespaced keyword using default
-        (keyword ns name)))))
+  (let [tok (read-token reader (read-char reader))
+        a (re-matches* symbol-pattern tok)
+        token (aget a 0)
+        ns (aget a 1)
+        name (aget a 2)]
+    (if (or (and (not (undefined? ns))
+                 (identical? (. ns (substring (- (.-length ns) 2) (.-length ns))) ":/"))
+            (identical? (aget name (dec (.-length name))) ":")
+            (not (== (.indexOf token "::" 1) -1)))
+      (reader-error reader "Invalid token: " token)
+      (if (and (not (nil? ns)) (> (.-length ns) 0))
+        (keyword (.substring ns 0 (.indexOf ns "/")) name)
+        (keyword (.substring token 1))))))
+
 
 (defn desugar-meta
   [f]

@@ -24,7 +24,7 @@
           c))))
   (string [_]
     (let [v (pr-str k)]
-      (if (and namespaced? (= -1 (.indexOf v "/")))
+      (if namespaced?
         (str ":" v)
         v)))
 
