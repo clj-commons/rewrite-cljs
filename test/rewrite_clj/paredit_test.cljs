@@ -120,6 +120,69 @@ First line
 
 
 
+(deftest kill-one-at-pos
+  (let [sample "[10 20 30]"]
+    (is (= "[10 30]"
+           (-> (z/of-string sample)
+               (pe/kill-one-at-pos {:row 1 :col 4}) ; at whitespace
+               z/root-string)))
+    (is (= "[10 30]"
+           (-> (z/of-string sample)
+               (pe/kill-one-at-pos {:row 1 :col 5})
+               z/root-string)))))
+
+(deftest kill-one-at-pos-new-zloc-is-left-node
+  (let [sample "[[10] 20 30]"]
+    (is (= "[10]"
+           (-> (z/of-string sample)
+               (pe/kill-one-at-pos {:row 1 :col 6})
+               z/string)))
+    (is (= "[10]"
+           (-> (z/of-string sample)
+               (pe/kill-one-at-pos {:row 1 :col 7})
+               z/string)))))
+
+(deftest kill-one-at-pos-keep-linebreaks
+  (let [sample (z/of-string "[10\n 20\n 30]")]
+    (is (= "[20\n 30]"
+           (-> sample (pe/kill-one-at-pos {:row 1 :col 2}) z/root-string)))
+    (is (= "[10\n 30]"
+           (-> sample (pe/kill-one-at-pos {:row 2 :col 1}) z/root-string)))
+    (is (= "[10\n 20]"
+           (-> sample (pe/kill-one-at-pos {:row 3 :col 1}) z/root-string)))))
+
+(deftest kill-one-at-pos-in-comment
+  (let [sample (z/of-string "; hello world")]
+    (is (= "; hello "
+           (-> (pe/kill-one-at-pos sample {:row 1 :col 8}) z/root-string)))
+    (is (= "; hello "
+           (-> (pe/kill-one-at-pos sample {:row 1 :col 9}) z/root-string)))
+    (is (= "; hello "
+           (-> (pe/kill-one-at-pos sample {:row 1 :col 13}) z/root-string)))
+    (is (= ";  world"
+           (-> (pe/kill-one-at-pos sample {:row 1 :col 2}) z/root-string)))))
+
+(deftest kill-one-at-pos-in-string
+  (let [sample (z/of-string "\"hello world\"")]
+    (is (= "\"hello \""
+           (-> (pe/kill-one-at-pos sample {:row 1 :col 7}) z/root-string)))
+    (is (= "\"hello \""
+           (-> (pe/kill-one-at-pos sample {:row 1 :col 8}) z/root-string)))
+    (is (= "\"hello \""
+           (-> (pe/kill-one-at-pos sample {:row 1 :col 12}) z/root-string)))
+    (is (= "\" world\""
+           (-> (pe/kill-one-at-pos sample {:row 1 :col 2}) z/root-string)))))
+
+
+(deftest kill-one-at-pos-in-multiline-string
+  (let [sample (z/of-string "\"foo bar do\n lorem\"")]
+    (is (= "\" bar do\n lorem\""
+           (-> (pe/kill-one-at-pos sample {:row 1 :col 2}) z/root-string)))
+    (is (= "\"foo bar do\n \""
+           (-> (pe/kill-one-at-pos sample {:row 2 :col 1}) z/root-string)))
+    (is (= "\"foo bar \n lorem\""
+           (-> (pe/kill-one-at-pos sample {:row 1 :col 10}) z/root-string)))))
+
 
 
 (deftest slurp-forward-and-keep-loc-rightmost

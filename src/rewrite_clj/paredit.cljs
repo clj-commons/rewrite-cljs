@@ -151,6 +151,76 @@
     zloc))
 
 
+
+(defn-  ^{:no-doc true} find-word-bounds
+  [v col]
+  (when (<= col (count v))
+    [(->> (seq v)
+          (take col)
+          reverse
+          (take-while #(not (= % \space))) count (- col))
+     (->> (seq v)
+          (drop col)
+          (take-while #(not (or (= % \space) (= % \newline))))
+          count
+          (+  col))]))
+
+
+(defn-  ^{:no-doc true} remove-word-at
+  [v col]
+  (when-let [[start end] (find-word-bounds v col)]
+    (str (.substring v 0 start)
+         (.substring v end))))
+
+
+
+(defn- ^{:no-doc true} kill-word-in-comment-node [zloc pos]
+  (let [col-bounds (-> zloc z/node meta :col)]
+  (-> zloc
+      (z/replace (-> zloc
+                     z/node
+                     :s
+                     (remove-word-at (- (:col pos) col-bounds))
+                     nd/comment-node)))))
+
+(defn- ^{:no-doc true} kill-word-in-string-node [zloc pos]
+  (let [bounds (-> zloc z/node meta)
+        row-idx (- (:row pos) (:row bounds))
+        col (if (= 0 row-idx)
+              (- (:col pos) (:col bounds))
+              (:col pos))]
+  (-> zloc
+      (z/replace (-> zloc
+                     z/node
+                     :lines
+                     (update-in [row-idx]
+                                #(remove-word-at % col))
+                     nd/string-node)))))
+
+
+
+(defn kill-one-at-pos
+  "In string and comment aware kill for one node/word at given pos
+
+  - `(+ |100 100) => (+ |100)`
+  - `(for |(bar do)) => (foo)`
+  - `\"|hello world\" => \"| world\"`
+  - ` ; |hello world => ;  |world`"
+  [zloc pos]
+  (if-let [candidate (->> (z/find-last-by-pos zloc pos)
+                          (ws/skip zz/right ws/whitespace?))]
+    (let [bounds (-> candidate z/node meta)
+          kill-in-node? (not (and (= (:row pos) (:row bounds))
+                                  (<= (:col pos) (:col bounds))))]
+      (cond
+       (and kill-in-node? (string-node? candidate)) (kill-word-in-string-node candidate pos)
+       (and kill-in-node? (ws/comment? candidate)) (kill-word-in-comment-node candidate pos)
+       (not (z/leftmost? candidate)) (-> (z/remove candidate)
+                                         (global-find-by-node (-> candidate z/left z/node)))
+       :else (z/remove candidate)))
+    zloc))
+
+
 (defn- ^{:no-doc true} find-slurpee-up [zloc f]
   (loop [l (z/up zloc)
          n 1]
