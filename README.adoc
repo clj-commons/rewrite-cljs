@@ -101,7 +101,7 @@ Purely selfish reasons. I plan to use this library from Light Table, which curre
 ### Why not cljx in the rewrite-clj ?
 I'm not really prepared to invest heavily in learning cljx for this particular lib.
 https://github.com/xsc[Xsc] and I concluded
-that we could consider backporting when cljc (http://dev.clojure.org/display/design/Reader+Conditionals [Reader Conditionals]) becomes more mainstream.
+that we could consider backporting when cljc http://dev.clojure.org/display/design/Reader+Conditionals[Reader Conditionals] becomes more mainstream.
 
 
 
