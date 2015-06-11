@@ -520,6 +520,16 @@
        :else zloc))))
 
 
+(defn raise
+  "Delete siblings and raise node at zloc one level up
+
+  - `[1 [2 |3 4]] => [1 |3]`"
+  [zloc]
+  (if-let [containing (z/up zloc)]
+    (-> containing
+        (z/replace (z/node zloc)))
+    zloc))
+
 
 (defn move-to-prev
   "Move node at current location to the position of previous location given a depth first traversal

@@ -529,6 +529,13 @@ First line
                         z/root-string))))
 
 
+(deftest raise
+  (is (= "[1 3]"
+         (-> (z/of-string "[1 [2 3 4]]")
+             z/down z/right z/down z/right
+             pe/raise
+             z/root-string))))
+
 
 (deftest move-to-prev-flat
   (is (= "(+ 2 1)" (-> "(+ 1 2)"
