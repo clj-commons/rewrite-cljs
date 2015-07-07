@@ -17,21 +17,30 @@
       (js/Error.
         (str data fmt
              " [at line " l ", column " c "]")))))
+;; (def boundaries
+;;   #{\" \: \; \' \@ \^ \` \~
+;;       \( \) \[ \] \{ \} \\ nil})
+
+
+(def js-boundaries
+  #js [\" \: \; \' \@ \^ \` \~
+      \( \) \[ \] \{ \} \\ nil])
+
+(defn- js-contains
+  [c]
+  (< -1 (.indexOf js-boundaries c)))
+
 
 (defn boundary?
   [c]
   "Check whether a given char is a token boundary."
-  (contains?
-    #{\" \: \; \' \@ \^ \` \~
-      \( \) \[ \] \{ \} \\ nil}
-    c))
+  (< -1 (.indexOf js-boundaries c)))
 
 
 (defn whitespace?
   [c]
-  (and c
-       (or (r/whitespace? c)
-           (= c \,))))
+  (r/whitespace? c))
+
 
 (defn linebreak?
   [c]
@@ -44,7 +53,7 @@
 
 (defn whitespace-or-boundary?
   [c]
-  (or (whitespace? c) (boundary? c)))
+  (or (boundary? c) (whitespace? c)))
 
 
 (defn read-while

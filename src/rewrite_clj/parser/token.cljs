@@ -10,13 +10,17 @@
       #(and (not (allowed? %))
             (r/whitespace-or-boundary? %)))))
 
+
 (defn- read-to-char-boundary
   [reader]
   (let [c (r/next reader)]
-    (str c
+    (.concat c
          (if (not= c \\)
            (read-to-boundary reader)
            ""))))
+
+(def symbol-suffix-chars
+   [\' \:])
 
 (defn- symbol-node
   "Symbols allow for certain boundary characters that have
@@ -24,10 +28,10 @@
   [reader value value-string]
   (let [suffix (read-to-boundary
                  reader
-                 [\' \:])]
+                 symbol-suffix-chars)]
     (if (empty? suffix)
       (node/token-node value value-string)
-      (let [s (str value-string suffix)]
+      (let [s (.concat value-string suffix)]
         (node/token-node
           (r/string->edn s)
           s)))))
@@ -39,7 +43,7 @@
         s (->> (if (= first-char \\)
                  (read-to-char-boundary reader)
                  (read-to-boundary reader))
-               (str first-char))
+               (.concat first-char))
         v (r/string->edn s)]
     (if (symbol? v)
       (symbol-node reader v s)

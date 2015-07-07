@@ -93,7 +93,6 @@
 (defn newlines
   "Create node representing the given number of newline characters."
   [n]
-  (println "creating newlines")
   (newline-node (apply str (repeat n \newline))))
 
 

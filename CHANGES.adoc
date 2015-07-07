@@ -1,6 +1,9 @@
 ## Changelog
 
 
+### 0.3.0
+- Performance improvements
+
 ### 0.2.0
 - Kill one (ParEdit)
 - Raise (ParEdit)

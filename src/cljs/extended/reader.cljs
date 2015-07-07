@@ -239,10 +239,14 @@
 ;; predicates
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(def js-whitespaces
+  #js [\return \newline \tab \space ","])
+
 (defn- ^boolean whitespace?
   "Checks whether a given character is whitespace"
   [ch]
-  (or (gstring/isBreakingWhitespace ch) (identical? \, ch)))
+  ;(or (gstring/isBreakingWhitespace ch) (identical? \, ch))
+  (< -1 (.indexOf js-whitespaces ch)))
 
 (defn- ^boolean numeric?
   "Checks whether a given character is numeric"
