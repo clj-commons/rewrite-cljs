@@ -10,7 +10,7 @@
   (printable-only? [_] false)
   (sexpr [_]
     (let [[mta data] (node/sexprs children)]
-      (assert (satisfies? IWithMeta data)
+      (assert (implements? IWithMeta data)
               (str "cannot attach metadata to: " (pr-str data)))
       (with-meta data (if (map? mta) mta {mta true}))))
   (length [_]

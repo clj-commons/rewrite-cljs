@@ -8,12 +8,12 @@
 
 (defn parse
   "Parse next form from the given reader."
-  [reader]
+  [^not-native reader]
   (p/parse-next reader))
 
 (defn parse-all
   "Parse all forms from the given reader."
-  [reader]
+  [^not-native reader]
   (let [nodes (->> (repeatedly #(parse reader))
                    (take-while identity)
                    (doall))]

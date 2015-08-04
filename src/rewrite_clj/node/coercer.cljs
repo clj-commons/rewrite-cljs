@@ -17,7 +17,7 @@
 
 (defn node-with-meta
   [n value]
-  (if (satisfies? IWithMeta value)
+  (if (implements? IWithMeta value)
     (let [mta (meta value)]
       (if (empty? mta)
         n

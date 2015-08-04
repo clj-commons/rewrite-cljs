@@ -10,25 +10,18 @@
 ;; TODO: try to get goog.string.format up and running !
 (defn throw-reader
   "Throw reader exception, including line/column."
-  [reader fmt & data]
+  [^not-native reader fmt & data]
   (let [c (r/get-column-number reader)
         l (r/get-line-number reader)]
     (throw
       (js/Error.
         (str data fmt
              " [at line " l ", column " c "]")))))
-;; (def boundaries
-;;   #{\" \: \; \' \@ \^ \` \~
-;;       \( \) \[ \] \{ \} \\ nil})
 
 
 (def js-boundaries
   #js [\" \: \; \' \@ \^ \` \~
       \( \) \[ \] \{ \} \\ nil])
-
-(defn- js-contains
-  [c]
-  (< -1 (.indexOf js-boundaries c)))
 
 
 (defn boundary?
@@ -37,33 +30,33 @@
   (< -1 (.indexOf js-boundaries c)))
 
 
-(defn whitespace?
+(defn ^boolean whitespace?
   [c]
   (r/whitespace? c))
 
 
-(defn linebreak?
+(defn ^boolean linebreak?
   [c]
-  (contains? #{\newline \return} c))
+  (r/linebreak? c))
 
-(defn space?
+(defn ^boolean space?
   [c]
-  (and (whitespace? c)
-       (not (linebreak? c))))
+  (r/space? c))
 
-(defn whitespace-or-boundary?
+(defn ^boolean whitespace-or-boundary?
   [c]
-  (or (boundary? c) (whitespace? c)))
+  (or (whitespace? c) (boundary? c)))
 
+(def buf (gstring/StringBuffer. ""))
 
 (defn read-while
   "Read while the chars fulfill the given condition. Ignores
-   the unmatching char."
-  [reader p? & [eof?]]
-  (let [buf (gstring/StringBuffer. "")
-        eof? (if (nil? eof?)
-               (not (p? nil))
-               eof?)]
+  the unmatching char."
+  ([^not-native reader p?]
+   (read-while reader p? (not (p? nil))))
+
+  ([^not-native reader p? eof?]
+    (.clear buf)
     (loop []
       (if-let [c (r/read-char reader)]
         (if (p? c)
@@ -80,7 +73,7 @@
 (defn read-until
   "Read until a char fulfills the given condition. Ignores the
    matching char."
-  [reader p?]
+  [^not-native reader p?]
   (read-while
     reader
     (complement p?)
@@ -88,7 +81,7 @@
 
 (defn read-include-linebreak
   "Read until linebreak and include it."
-  [reader]
+  [^not-native reader]
   (str
     (read-until
       reader
@@ -102,37 +95,39 @@
 
 (defn ignore
   "Ignore the next character."
-  [reader]
+  [^not-native reader]
   (r/read-char reader)
   nil)
 
 
 (defn next
   "Read next char."
-  [reader]
+  [^not-native reader]
   (r/read-char reader))
 
 (defn peek
   "Peek next char."
-  [reader]
+  [^not-native reader]
   (r/peek-char reader))
+
+
 
 
 (defn read-with-meta
   "Use the given function to read value, then attach row/col metadata."
-  [reader read-fn]
+  [^not-native reader read-fn]
   (let [row (r/get-line-number reader)
         col (r/get-column-number reader)
-        entry (read-fn reader)]
+        ^not-native entry (read-fn reader)]
     (when entry
       (let [end-row (r/get-line-number reader)
             end-col (r/get-column-number reader)
             end-col (if (= 0 end-col)
-                      (+ col (count (nd/string entry)))
+                      (+ col (.-length (nd/string entry)))
                       end-col)] ; TODO: Figure out why numbers are sometimes whacky
         (if (= 0 col) ; why oh why
           entry
-          (with-meta
+          (-with-meta
             entry
             {:row row
              :col col
@@ -142,7 +137,7 @@
 (defn read-repeatedly
   "Call the given function on the given reader until it returns
    a non-truthy value."
-  [reader read-fn]
+  [^not-native reader read-fn]
   (->> (repeatedly #(read-fn reader))
        (take-while identity)
        (doall)))
@@ -151,7 +146,7 @@
 (defn read-n
   "Call the given function on the given reader until `n` values matching `p?` have been
    collected."
-  [reader node-tag read-fn p? n]
+  [^not-native reader node-tag read-fn p? n]
   {:pre [(pos? n)]}
   (loop [c 0
          vs []]

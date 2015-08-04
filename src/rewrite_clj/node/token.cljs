@@ -8,7 +8,7 @@
   (tag [_] :token)
   (printable-only? [_] false)
   (sexpr [_] value)
-  (length [_] (count string-value))
+  (length [_] (.-length string-value))
   (string [_] string-value)
 
   Object
@@ -22,7 +22,7 @@
 
 (defn token-node
   "Create node for an unspecified EDN token."
-  [value & [string-value]]
-  (->TokenNode
-    value
-    (or string-value (pr-str value))))
+  ([value]
+   (token-node value (pr-str value)))
+  ([value string-value]
+  (->TokenNode value string-value)))

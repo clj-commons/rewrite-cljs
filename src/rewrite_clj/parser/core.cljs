@@ -16,14 +16,14 @@
 
 
 (defn- parse-delim
-  [reader delimiter]
+  [^not-native reader delimiter]
   (reader/ignore reader)
   (->> #(binding [*delimiter* delimiter]
           (parse-next %))
        (reader/read-repeatedly reader)))
 
 (defn- parse-printables
-  [reader node-tag n & [ignore?]]
+  [^not-native reader node-tag n & [ignore?]]
   (when ignore?
     (reader/ignore reader))
   (reader/read-n
@@ -35,35 +35,35 @@
 
 
 (defn- parse-meta
-  [reader]
+  [^not-native reader]
   (reader/ignore reader)
   (node/meta-node (parse-printables reader :meta 2)))
 
 
 (defn- parse-eof
-  [reader]
+  [^not-native reader]
   (when *delimiter*
     (reader/throw-reader reader "Unexpected EOF.")))
 
 ;; ### Seqs
 
 (defn- parse-list
-  [reader]
+  [^not-native reader]
   (node/list-node (parse-delim reader \))))
 
 (defn- parse-vector
-  [reader]
+  [^not-native reader]
   (node/vector-node (parse-delim reader \])))
 
 (defn- parse-map
-  [reader]
+  [^not-native reader]
   (node/map-node (parse-delim reader \})))
 
 
 ;; ### Reader Specialities
 
 (defn- parse-sharp
-  [reader]
+  [^not-native reader]
   (reader/ignore reader)
   (case (reader/peek reader)
     nil (reader/throw-reader reader "Unexpected EOF.")
@@ -77,7 +77,7 @@
     (node/reader-macro-node (parse-printables reader :reader-macro 2))))
 
 (defn- parse-unmatched
-  [reader]
+  [^not-native reader]
   (reader/throw-reader
     reader
     "Unmatched delimiter: %s"
@@ -85,21 +85,21 @@
 
 
 (defn- parse-deref
-  [reader]
+  [^not-native reader]
   (node/deref-node (parse-printables reader :deref 1 true)))
 
 ;; ## Quotes
 
 (defn- parse-quote
-  [reader]
+  [^not-native reader]
   (node/quote-node (parse-printables reader :quote 1 true)))
 
 (defn- parse-syntax-quote
-  [reader]
+  [^not-native reader]
   (node/syntax-quote-node (parse-printables reader :syntax-quote 1 true)))
 
 (defn- parse-unquote
-  [reader]
+  [^not-native reader]
   (reader/ignore reader)
   (let [c (reader/peek reader)]
     (if (= c \@)
@@ -109,31 +109,36 @@
         (parse-printables reader :unquote 1)))))
 
 (defn- parse-comment
-  [reader]
+  [^not-native reader]
   (reader/ignore reader)
   (node/comment-node (reader/read-include-linebreak reader)))
 
 
-(def dispatch-map
-  {\^ parse-meta      \# parse-sharp
-   \( parse-list      \[ parse-vector    \{ parse-map
-   \} parse-unmatched \] parse-unmatched \) parse-unmatched
-   \~ parse-unquote   \' parse-quote     \` parse-syntax-quote
-   \; parse-comment   \@ parse-deref     \" parse-string
-   \: parse-keyword})
 
 (defn- dispatch
   [c]
-  (cond (nil? c)               parse-eof
-        (reader/whitespace? c) parse-whitespace
-        (= c *delimiter*)      reader/ignore
-        :else (get dispatch-map c parse-token)))
+  (cond (nil? c)                        parse-eof
+        (identical? c *delimiter*)      reader/ignore
+        (reader/whitespace? c)          parse-whitespace
+        (identical? c \^)               parse-meta
+        (identical? c \#)               parse-sharp
+        (identical? c \()               parse-list
+        (identical? c \[)               parse-vector
+        (identical? c \{)               parse-map
+        (identical? c \})               parse-unmatched
+        (identical? c \])               parse-unmatched
+        (identical? c \))               parse-unmatched
+        (identical? c \~)               parse-unquote
+        (identical? c \')               parse-quote
+        (identical? c \`)               parse-syntax-quote
+        (identical? c \;)               parse-comment
+        (identical? c \@)               parse-deref
+        (identical? c \")               parse-string
+        (identical? c \:)               parse-keyword
+        :else                           parse-token))
 
 
-(defn parse-next*
-  []
-  (comp dispatch reader/peek))
 
 (defn parse-next
-  [reader]
-  (reader/read-with-meta reader ((parse-next*) reader)))
+  [^not-native rdr]
+  (reader/read-with-meta rdr (dispatch (reader/peek rdr))))

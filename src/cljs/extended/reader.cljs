@@ -42,15 +42,15 @@
   Reader
   (read-char [reader]
     (when (> s-len s-pos)
-      (let [r (aget s s-pos)]
+      (let [r (.charAt s s-pos)]
         (set! s-pos (inc s-pos))
         r)))
   (peek-char [reader]
     (when (> s-len s-pos)
-      (aget s s-pos))))
+      (.charAt s s-pos))))
 
 (deftype PushbackReader
-    [rdr buf buf-len ^:mutable buf-pos]
+    [^not-native rdr buf buf-len ^:mutable buf-pos]
   Reader
   (read-char [reader]
     (if (< buf-pos buf-len)
@@ -72,17 +72,20 @@
 
 (declare newline?)
 
-(defn- normalize-newline [rdr ch]
+(defn- normalize-newline [^not-native rdr ch]
   (if (identical? \return ch)
     (let [c (peek-char rdr)]
-      (when (identical? \formfeed c)
+      (when (or (identical? \formfeed c)
+                (identical? \newline c))
         (read-char rdr))
       \newline)
     ch))
 
+
 (deftype IndexingPushbackReader
-    [rdr ^:mutable line ^:mutable column
-     ^:mutable line-start? ^:mutable prev]
+    [^not-native rdr ^:mutable line ^:mutable column
+     ^:mutable line-start? ^:mutable prev
+     ^:mutable prev-column file-name]
   Reader
   (read-char [reader]
     (when-let [ch (read-char rdr)]
@@ -90,6 +93,7 @@
         (set! prev line-start?)
         (set! line-start? (newline? ch))
         (when line-start?
+          (set! prev-column column)
           (set! column 0)
           (set! line (inc line)))
         (set! column (inc column))
@@ -100,14 +104,17 @@
 
   IPushbackReader
   (unread [reader ch]
-    (when line-start? (set! line (dec line)))
+    (if line-start?
+      (do (set! line (dec line))
+          (set! column prev-column))
+      (set! column (dec column)))
     (set! line-start? prev)
-    (set! column (dec column))
     (unread rdr ch))
 
   IndexingReader
-  (get-line-number [reader] (inc line))
-  (get-column-number [reader]  column))
+  (get-line-number [reader] (int line))
+  (get-column-number [reader] (int column))
+  (get-file-name [reader] file-name))
 
 
 
@@ -145,7 +152,7 @@
 
 
 (deftype SourceLoggingPushbackReader
-    [rdr ^:mutable line ^:mutable column
+    [^not-native rdr ^:mutable line ^:mutable column
      ^:mutable line-start? ^:mutable prev
     source-log-frames]
   Reader
@@ -189,7 +196,7 @@
 (defn string-reader
   "Creates a StringReader from a given string"
   ([s]
-     (StringReader. s (count s) 0)))
+     (StringReader. s (.-length s) 0)))
 
 (defn string-push-back-reader
   "Creates a PushbackReader from a given string"
@@ -199,13 +206,15 @@
      (PushbackReader. (string-reader s) (object-array buf-len) buf-len buf-len)))
 
 (defn indexing-push-back-reader
-  "Creates an IndexingPushbackReader from a given string"
-  ([s]
+  "Creates an IndexingPushbackReader from a given string or PushbackReader"
+  ([s-or-rdr]
+     (indexing-push-back-reader s-or-rdr 1))
+  ([s-or-rdr buf-len]
+     (indexing-push-back-reader s-or-rdr buf-len nil))
+  ([s-or-rdr buf-len file-name]
      (IndexingPushbackReader.
-      (string-push-back-reader s) 0 1 true nil))
-  ([s buf-len]
-     (IndexingPushbackReader.
-      (string-push-back-reader s buf-len) 0 1 true nil)))
+      (if (string? s-or-rdr) (string-push-back-reader s-or-rdr buf-len) s-or-rdr) 1 1 true nil 0 file-name)))
+
 
 
 (defn source-logging-push-back-reader
@@ -239,6 +248,12 @@
 ;; predicates
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(def js-space
+  #js [\tab \space ","])
+
+(def js-linebreak
+  #js [\return \newline])
+
 (def js-whitespaces
   #js [\return \newline \tab \space ","])
 
@@ -247,6 +262,19 @@
   [ch]
   ;(or (gstring/isBreakingWhitespace ch) (identical? \, ch))
   (< -1 (.indexOf js-whitespaces ch)))
+
+
+
+(defn- ^boolean space?
+  "Checks whether a given character is space"
+  [ch]
+  (< -1 (.indexOf js-space ch)))
+
+(defn- ^boolean linebreak?
+  "Checks whether a given character is a linebreak"
+  [ch]
+  (< -1 (.indexOf js-linebreak ch)))
+
 
 (defn- ^boolean numeric?
   "Checks whether a given character is numeric"
@@ -265,7 +293,7 @@
 
 (defn- ^boolean number-literal?
   "Checks whether the reader is at the start of a number literal"
-  [reader initch]
+  [^not-native reader initch]
   (or (numeric? initch)
       (and (or (identical? \+ initch) (identical? \- initch))
            (numeric? (peek-char reader)))))
@@ -276,11 +304,12 @@
 ;; read helpers
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+
 ;; TODO: use ex-info
 (defn reader-error
-  [rdr & msg]
+  [^not-native rdr & msg]
   (let [error-msg (apply str msg)]
-    (throw (js/Error. (str error-msg (when (satisfies? cljs.extended.reader.IndexingReader rdr)
+    (throw (js/Error. (str error-msg (when (implements? cljs.extended.reader.IndexingReader rdr)
                                        (str ", on line: " (get-line-number rdr)
                                             ", on column: " (get-column-number rdr))))))))
 
@@ -290,19 +319,33 @@
        (not (identical? ch ":"))
        (macros ch)))
 
-(defn read-token
-  [rdr initch]
-  (loop [sb (gstring/StringBuffer. initch)
-         ch (read-char rdr)]
-    (if (or (nil? ch)
-            (whitespace? ch)
-            (macro-terminating? ch))
-      (do (unread rdr ch) (. sb (toString)))
-      (recur (do (.append sb ch) sb) (read-char rdr)))))
+
+
+(def tok-sb (gstring/StringBuffer.))
+
+(defn- read-token
+  "Read in a single logical token from the reader"
+  [^not-native rdr initch]
+  (if (nil? initch)
+    (reader-error rdr "EOF while reading")
+    (do
+      (.clear tok-sb)
+      (loop [ch initch]
+        (if (or (whitespace? ch)
+                (macro-terminating? ch)
+                (nil? ch))
+          (do
+            (when-not (nil? ch)
+              (unread rdr ch))
+            (.toString tok-sb))
+          (do
+            (.append tok-sb ch)
+            (recur (read-char rdr))))))))
+
 
 (defn read-line
   "Reads to the end of a line and returns the line."
-  [rdr]
+  [^not-native rdr]
   (loop [sb (gstring/StringBuffer.)
          ch (read-char rdr)]
     (cond
@@ -315,14 +358,14 @@
       :else
       (recur (do (.append sb ch) sb) (read-char rdr)))))
 
-(defn line-seq [rdr]
+(defn line-seq [^not-native rdr]
   "Returns the lines of text from rdr as a lazy sequence of strings."
   (when-let [line (read-line rdr)]
     (cons line (lazy-seq (line-seq rdr)))))
 
 (defn skip-line
   "Advances the reader to the end of a line. Returns the reader"
-  [reader _]
+  [^not-native reader _]
   (loop []
     (let [ch (read-char reader)]
       (if (or (identical? ch "\n") (identical? ch "\r") (nil? ch))
@@ -408,13 +451,13 @@
 ;; unicode
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn read-2-chars [reader]
+(defn read-2-chars [^not-native reader]
   (.toString
     (gstring/StringBuffer.
       (read-char reader)
       (read-char reader))))
 
-(defn read-4-chars [reader]
+(defn read-4-chars [^not-native reader]
   (.toString
     (gstring/StringBuffer.
       (read-char reader)
@@ -489,13 +532,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn not-implemented
-  [rdr ch]
+  [^not-native rdr ch]
   (reader-error rdr "Reader for " ch " not implemented yet"))
 
 (declare maybe-read-tagged-type)
 
 (defn read-dispatch
-  [rdr _]
+  [^not-native rdr _]
   (let [ch (read-char rdr)
         dm (dispatch-macros ch)]
     (if dm
@@ -505,24 +548,24 @@
         (reader-error rdr "No dispatch macro for " ch)))))
 
 (defn read-unmatched-delimiter
-  [rdr ch]
+  [^not-native rdr ch]
   (reader-error rdr "Unmatched delimiter " ch))
 
 
-(defn maybe-get-pos [rdr]
-  (when (satisfies? cljs.extended.reader.IndexingReader rdr)
+(defn maybe-get-pos [^not-native rdr]
+  (when (implements? cljs.extended.reader.IndexingReader rdr)
     {:line (get-line-number rdr)
      :column (dec (get-column-number rdr))}))
 
-(defn prep-meta [rdr pos source]
+(defn prep-meta [^not-native rdr pos source]
   (when pos
     (merge pos
            {:end-line (get-line-number rdr)
             :end-column (get-column-number rdr)
             :source source})))
 
-(defn with-source-log [rdr f prefix]
-  (if (= cljs.extended.reader/SourceLoggingPushbackReader (type rdr))
+(defn with-source-log [^not-native rdr f prefix]
+  (if (instance? cljs.extended.reader/SourceLoggingPushbackReader rdr)
     (let [frame (.-source-log-frames rdr)
           new-frame (atom (assoc-in @frame [:offset] (.getLength (:buffer @frame))))
           ret (f)
@@ -532,7 +575,7 @@
 
 
 (defn read-list
-  [rdr _]
+  [^not-native rdr _]
   (let [pos (maybe-get-pos rdr)
         [the-list source] (with-source-log rdr #(read-delimited-list \) rdr true) "(")]
     (with-meta (apply list the-list)
@@ -542,14 +585,14 @@
 (def read-comment skip-line)
 
 (defn read-vector
-  [rdr _]
+  [^not-native rdr _]
   (let [pos (maybe-get-pos rdr)
         [the-vec source] (with-source-log rdr #(read-delimited-list "]" rdr true) "[")]
     (with-meta (identity the-vec)
       (prep-meta rdr pos source))))
 
 (defn read-map
-  [rdr _]
+  [^not-native rdr _]
   (let [pos (maybe-get-pos rdr)
         [l source] (with-source-log rdr #(read-delimited-list "}" rdr true) "{")]
     (when (odd? (count l))
@@ -560,7 +603,7 @@
 
 
 (defn read-number
-  [reader initch]
+  [^not-native reader initch]
   (loop [buffer (gstring/StringBuffer. initch)
          ch (read-char reader)]
     (if (or (nil? ch) (whitespace? ch) (macros ch))
@@ -572,7 +615,7 @@
       (recur (do (.append buffer ch) buffer) (read-char reader)))))
 
 (defn read-string*
-  [reader _]
+  [^not-native reader _]
   (loop [buffer (gstring/StringBuffer.)
          ch (read-char reader)]
     (cond
@@ -597,21 +640,15 @@
       (special-symbols token (symbol token))))
 
 (defn read-symbol
-  [reader initch]
-  (let [pos (maybe-get-pos reader)
-        [token source] (with-source-log reader #(read-token reader initch) initch)]
-    (if (satisfies? IWithMeta token)
-      (with-meta (parse-symbol token)
-        (prep-meta reader pos source))
+  [^not-native reader initch]
+  (let [token (read-token reader initch)]
+    (when-not (nil? token)
       (parse-symbol token))))
-;;     (if (gstring/contains token "/")
-;;       (symbol (subs token 0 (.indexOf token "/"))
-;;               (subs token (inc (.indexOf token "/")) (.-length token)))
-;;       (special-symbols token (symbol token)))))
+
 
 ;; based on matchSymol in clojure/lang/LispReader.java
 (defn read-keyword
-  [reader initch]
+  [^not-native reader initch]
   (let [tok (read-token reader (read-char reader))
         a (re-matches* symbol-pattern tok)
         token (aget a 0)
@@ -637,23 +674,23 @@
 
 (defn wrapping-reader
   [sym]
-  (fn [rdr _]
+  (fn [^not-native rdr _]
     (list sym (read rdr true nil true))))
 
 (defn throwing-reader
   [msg]
-  (fn [rdr _]
+  (fn [^not-native rdr _]
     (reader-error rdr msg)))
 
 (defn read-meta
-  [rdr _]
-  (let [[line column] (when (satisfies? cljs.extended.reader.IndexingReader rdr)
+  [^not-native rdr _]
+  (let [[line column] (when (implements? cljs.extended.reader.IndexingReader rdr)
                         [(get-line-number rdr) (dec (get-column-number rdr))])
         m (desugar-meta (read rdr true nil true))]
     (when-not (map? m)
       (reader-error rdr "Metadata must be Symbol,Keyword,String or Map"))
     (let [o (read rdr true nil true)]
-      (if (satisfies? IWithMeta o)
+      (if (implements? IWithMeta o)
         (let [m (if (and line
                          (seq? o))
                   (assoc m :line line
@@ -670,10 +707,10 @@
 (def ^:dynamic *arg-env* (atom nil))
 
 (defn isUnquote? [form]
-  (and (satisfies? ISeq form) (= (first form) UNQUOTE)))
+  (and (implements? ISeq form) (= (first form) UNQUOTE)))
 
 (defn isUnquoteSplicing? [form]
-  (and (satisfies? ISeq form) (= (first form) UNQUOTE-SPLICING)))
+  (and (implements? ISeq form) (= (first form) UNQUOTE-SPLICING)))
 
 (defn sqExpandList [sq]
   (doall
@@ -747,21 +784,21 @@
     (list 'quote form)
 
     ;; (form instanceof IPersistentCollection)
-    (satisfies? ICollection form)
+    (implements? ICollection form)
     (cond
-      (satisfies? IRecord form)
+      (implements? IRecord form)
       form
 
-      (satisfies? IMap form)
+      (implements? IMap form)
       (list 'apply 'hash-map (list 'seq (cons 'concat (sqExpandList (apply concat (seq form))))))
 
-      (satisfies? IVector form)
+      (implements? IVector form)
       (list 'apply 'vector (list 'seq (cons 'concat (sqExpandList form))))
 
-      (satisfies? ISet form)
+      (implements? ISet form)
       (list 'apply 'hash-set (list 'seq (cons 'concat (sqExpandList (seq form)))))
 
-      (or (satisfies? ISeq form) (satisfies? IList form))
+      (or (implements? ISeq form) (implements? IList form))
       (if-let [sq (seq form)]
         (list 'seq (cons 'concat (sqExpandList sq)))
         (cons 'list nil))
@@ -779,13 +816,13 @@
     ))
 
 (defn read-syntax-quote
-  [rdr _]
+  [^not-native rdr _]
   (binding [*gensym-env* (atom {})]
     (let [form (read rdr true nil true)]
       (syntaxQuote form))))
 
 (defn read-unquote
-  [rdr _]
+  [^not-native rdr _]
   (let [ch (read-char rdr)]
     (cond
       (= nil ch)
@@ -802,19 +839,19 @@
           (list UNQUOTE o))))))
 
 (defn read-character
-  [rdr _]
+  [^not-native rdr _]
   (let [ch (read-char rdr)]
     (when (= nil ch)
       (reader-error rdr "EOF while reading character constant"))
     (let [token (read-token rdr ch)]
       (cond
         (= 1 (count token))   token
-        (= "newline" token)   "\n"
-        (= "space" token)     " "
-        (= "tab" token)       "\t"
-        (= "backspace" token) "\b"
-        (= "formfeed" token)  "\f"
-        (= "return" token)    "\r"
+        (identical? "newline" token)   "\n"
+        (identical? "space" token)     " "
+        (identical? "tab" token)       "\t"
+        (identical? "backspace" token) "\b"
+        (identical? "formfeed" token)  "\f"
+        (identical? "return" token)    "\r"
 
         (= "u" (first token))
         (let [chars (apply str (rest token))]
@@ -842,7 +879,7 @@
     (symbol (str (gensym pre) "#"))))
 
 (defn read-fn
-  [rdr _]
+  [^not-native rdr _]
   (when @*arg-env*
     (reader-error nil "nested #()s are not allowed"))
   (binding [*arg-env* (atom (sorted-map))]
@@ -876,7 +913,7 @@
           ret)))))
 
 (defn read-arg
-  [rdr pct]
+  [^not-native rdr pct]
   (if (not @*arg-env*)
     (read-symbol rdr "%")
     (let [ch (peek-char rdr)]
@@ -897,14 +934,14 @@
             (registerArg (int n))))))))
 
 (defn read-set
-  [rdr _]
+  [^not-native rdr _]
   (let [pos (maybe-get-pos rdr)
         [the-set source] (with-source-log rdr #(read-delimited-list "}" rdr true) "#{")]
     (with-meta (identity the-set)
       (prep-meta rdr (update-in pos [:column] dec) source))))
 
 (defn read-regex
-  [reader]
+  [^not-native reader]
   (loop [buffer ""
          ch (read-char reader)]
 
@@ -920,7 +957,7 @@
       (recur (str buffer ch) (read-char reader)))))
 
 (defn read-discard
-  [rdr _]
+  [^not-native rdr _]
   (read rdr true nil true)
   rdr)
 
@@ -945,6 +982,7 @@
    (identical? c \#) read-dispatch
    :else nil))
 
+
 ;; omitted by design: var reader, eval reader
 (defn dispatch-macros [s]
   (cond
@@ -959,11 +997,11 @@
 (defn read
   "Reads the first object from a PushbackReader. Returns the object read.
    If EOF, throws if eof-is-error is true. Otherwise returns sentinel."
-  ([reader]
+  ([^not-native reader]
     (read reader true nil))
-  ([reader eof-is-error sentinel]
+  ([^not-native reader eof-is-error sentinel]
     (read reader eof-is-error sentinel false))
-  ([reader eof-is-error sentinel is-recursive]
+  ([^not-native reader eof-is-error sentinel is-recursive]
     (let [ch (read-char reader)]
       (cond
        (nil? ch) (if eof-is-error (reader-error reader "EOF while reading") sentinel)
@@ -1091,7 +1129,7 @@
                         "queue" read-queue}))
 
 (defn maybe-read-tagged-type
-  [rdr initch]
+  [^not-native rdr initch]
   (let [tag  (read-symbol rdr initch)]
     (if-let [pfn (get @*tag-table* (name tag))]
       (pfn (read rdr true nil false))

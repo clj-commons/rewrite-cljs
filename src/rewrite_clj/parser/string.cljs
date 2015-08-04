@@ -12,29 +12,29 @@
     (conj lines s)))
 
 (defn- read-string-data
-  [reader]
+  [^not-native reader]
   (u/ignore reader)
   (let [buf (gstring/StringBuffer.)]
     (loop [escape? false
            lines []]
       (if-let [c (r/read-char reader)]
-        (cond (and (not escape?) (= c \"))
+        (cond (and (not escape?) (identical? c \"))
               (flush-into lines buf)
 
-              (= c \newline)
+              (identical? c \newline)
               (recur escape? (flush-into lines buf))
 
               :else
               (do
                 (.append buf c)
-                (recur (and (not escape?) (= c \\)) lines)))
+                (recur (and (not escape?) (identical? c \\)) lines)))
         (u/throw-reader reader "Unexpected EOF while reading string.")))))
 
 (defn parse-string
-  [reader]
+  [^not-native reader]
   (node/string-node (read-string-data reader)))
 
 (defn parse-regex
-  [reader]
+  [^not-native reader]
   (let [[h & _] (read-string-data reader)]
     (node/token-node (re-pattern h))))

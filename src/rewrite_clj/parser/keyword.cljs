@@ -4,10 +4,10 @@
             [cljs.extended.reader :as r]))
 
 (defn parse-keyword
-  [reader]
+  [^not-native reader]
   (u/next reader)
   (if-let [c (r/peek-char reader)]
-    (if (= c \:)
+    (if (identical? c \:)
       (node/keyword-node
         (r/read-keyword reader ":")
         true)
