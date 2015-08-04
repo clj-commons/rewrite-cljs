@@ -1,6 +1,9 @@
 ## Changelog
 
 
+### 0.3.1
+- Significant improvement in performance of parsing
+
 ### 0.3.0
 - Performance improvements
 
