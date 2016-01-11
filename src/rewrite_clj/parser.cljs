@@ -1,8 +1,7 @@
 (ns rewrite-clj.parser
   (:require [rewrite-clj.parser.core :as p]
             [rewrite-clj.node :as node]
-            [rewrite-clj.reader :as reader]
-            [clojure.walk :as w]))
+            [rewrite-clj.reader :as r]))
 
 ;; ## Parser Core
 
@@ -26,11 +25,11 @@
 (defn parse-string
   "Parse first form in the given string."
   [s]
-  (parse (reader/string-reader s)))
+  (parse (r/indexing-push-back-reader s)))
 
 (defn parse-string-all
   "Parse all forms in the given string."
   [s]
-  (parse-all (reader/string-reader s)))
+  (parse-all (r/indexing-push-back-reader s)))
 
 

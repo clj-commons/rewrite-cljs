@@ -1,6 +1,6 @@
 (ns rewrite-clj.node.stringz
   (:require [rewrite-clj.node.protocols :as node]
-            [rewrite-clj.reader :as reader]
+            [cljs.tools.reader :as r]
             [clojure.string :as s]))
 
 ;; ## Node
@@ -24,7 +24,7 @@
   (sexpr [_]
     (join-lines
       (map
-        (comp reader/string->edn wrap-string)
+        (comp r/read-string wrap-string)
         lines)))
   (length [_]
     (+ 2 (reduce + (map count lines))))

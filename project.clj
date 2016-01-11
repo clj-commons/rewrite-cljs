@@ -7,7 +7,8 @@
             :key "mit"}
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [org.clojure/clojurescript "1.7.228"
-                  :exclusions [org.apache.ant/ant]]]
+                  :exclusions [org.apache.ant/ant]]
+                 [org.clojure/tools.reader "1.0.0-alpha3"]]
   :doo {:build "test"}
   :profiles {:dev
              {:plugins [[lein-cljsbuild "1.1.2"]
@@ -26,7 +27,6 @@
                              :exclusions [org.clojure/clojure]]]
                  :codeina {:sources ["src"]
                            :language :clojurescript
-                           :exclude [cljs.extended.reader]
                            :src-dir-uri "https://github.com/rundis/rewrite-cljs/blob/master/"
                            :src-linenum-anchor-prefix "L"}}}
 

@@ -1,11 +1,11 @@
 (ns rewrite-clj.parser.keyword
   (:require [rewrite-clj.node :as node]
-            [rewrite-clj.reader :as u]
-            [cljs.extended.reader :as r]))
+            [cljs.tools.reader.reader-types]
+            [rewrite-clj.reader :as r]))
 
 (defn parse-keyword
   [^not-native reader]
-  (u/next reader)
+  (r/read-char reader)
   (if-let [c (r/peek-char reader)]
     (if (identical? c \:)
       (node/keyword-node
@@ -14,4 +14,4 @@
       (do
         (r/unread reader \:)
         (node/keyword-node (r/read-keyword reader ":"))))
-    (u/throw-reader reader "unexpected EOF while reading keyword.")))
+    (r/throw-reader reader "unexpected EOF while reading keyword.")))

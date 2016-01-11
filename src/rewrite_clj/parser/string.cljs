@@ -1,7 +1,6 @@
 (ns rewrite-clj.parser.string
   (:require [rewrite-clj.node :as node]
-            [rewrite-clj.reader :as u]
-            [cljs.extended.reader :as r]
+            [rewrite-clj.reader :as r]
             [goog.string :as gstring]))
 
 (defn- flush-into
@@ -13,7 +12,7 @@
 
 (defn- read-string-data
   [^not-native reader]
-  (u/ignore reader)
+  (r/ignore reader)
   (let [buf (gstring/StringBuffer.)]
     (loop [escape? false
            lines []]
@@ -28,7 +27,7 @@
               (do
                 (.append buf c)
                 (recur (and (not escape?) (identical? c \\)) lines)))
-        (u/throw-reader reader "Unexpected EOF while reading string.")))))
+        (r/throw-reader reader "Unexpected EOF while reading string.")))))
 
 (defn parse-string
   [^not-native reader]
