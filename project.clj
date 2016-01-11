@@ -1,24 +1,24 @@
-(defproject rewrite-cljs "0.3.1"
+(defproject rewrite-cljs "0.3.1-SNAPSHOT"
   :description "Comment-/Whitespace-preserving rewriting of EDN documents."
   :url "https://github.com/rundis/rewrite-cljs"
   :license {:name "MIT License"
             :url "http://opensource.org/licenses/MIT"
             :year 2015
             :key "mit"}
-  :dependencies [[org.clojure/clojure "1.5.1"]
-                 [org.clojure/clojurescript "0.0-2202"
+  :dependencies [[org.clojure/clojure "1.7.0"]
+                 [org.clojure/clojurescript "1.7.228"
                   :exclusions [org.apache.ant/ant]]]
-
-
+  :doo {:build "test"}
   :profiles {:dev
-             {:plugins [[lein-cljsbuild "1.0.3"]
-                        [com.cemerick/clojurescript.test "0.3.3"]]
+             {:plugins [[lein-cljsbuild "1.1.2"]
+                        [lein-doo "0.1.6"]]
 
               :cljsbuild {
                           :builds {:test
                                    {:source-paths ["src" "test"]
-                                    :notify-command ["phantomjs" :cljs.test/runner "target/out/unit-test.js"]
+                                    ;:notify-command ["phantomjs" :cljs.test/runner "target/out/unit-test.js"]
                                     :compiler {:output-to "target/out/unit-test.js"
+                                               :main 'rewrite-clj.runner
                                                :optimizations :whitespace
                                                :pretty-print true}}}}}
 

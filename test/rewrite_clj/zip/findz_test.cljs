@@ -1,7 +1,5 @@
 (ns rewrite-clj.findz-test
-  (:require-macros [cemerick.cljs.test
-                    :refer (is deftest with-test run-tests testing test-var)])
-  (:require [cemerick.cljs.test :as t]
+  (:require [cljs.test :refer-macros [deftest is testing run-tests]]
             [rewrite-clj.zip :as z]
             [rewrite-clj.node :as n]
             [rewrite-clj.zip.findz :as f]))
