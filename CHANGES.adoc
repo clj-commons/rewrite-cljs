@@ -1,5 +1,11 @@
 ## Changelog
 
+### 0.4.0
+- Upped Clojure to 1.7.0 and ClojureScript 1.7.228
+- Using cljs.tools.reader rather than a custom reader
+- Tests are run using https://github.com/bensu/doo
+
+Kudos to https://github.com/mhuebert for the awesome pull request !
 
 ### 0.3.1
 - Significant improvement in performance of parsing
