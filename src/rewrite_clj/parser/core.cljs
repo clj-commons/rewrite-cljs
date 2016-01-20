@@ -4,7 +4,8 @@
             [rewrite-clj.parser.keyword :refer [parse-keyword]]
             [rewrite-clj.parser.string :refer [parse-string parse-regex]]
             [rewrite-clj.parser.token :refer [parse-token]]
-            [rewrite-clj.parser.whitespace :refer [parse-whitespace]]))
+            [rewrite-clj.parser.whitespace :refer [parse-whitespace]]
+            [cljs.tools.reader.reader-types :refer [peek-char]]))
 
 ;; ## Base Parser
 
@@ -65,7 +66,7 @@
 (defn- parse-sharp
   [^not-native reader]
   (reader/ignore reader)
-  (case (reader/peek reader)
+  (case (peek-char reader)
     nil (reader/throw-reader reader "Unexpected EOF.")
     \{ (node/set-node (parse-delim reader \}))
     \( (node/fn-node (parse-delim reader \)))
@@ -81,7 +82,7 @@
   (reader/throw-reader
     reader
     "Unmatched delimiter: %s"
-    (reader/peek reader)))
+    (peek-char reader)))
 
 
 (defn- parse-deref
@@ -101,7 +102,7 @@
 (defn- parse-unquote
   [^not-native reader]
   (reader/ignore reader)
-  (let [c (reader/peek reader)]
+  (let [c (peek-char reader)]
     (if (= c \@)
       (node/unquote-splicing-node
         (parse-printables reader :unquote 1 true))
@@ -141,4 +142,4 @@
 
 (defn parse-next
   [^not-native rdr]
-  (reader/read-with-meta rdr (dispatch (reader/peek rdr))))
+  (reader/read-with-meta rdr (dispatch (peek-char rdr))))

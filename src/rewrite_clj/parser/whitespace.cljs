@@ -1,13 +1,13 @@
 (ns rewrite-clj.parser.whitespace
   (:require [rewrite-clj.node :as node]
-            [rewrite-clj.reader :as reader]))
+            [rewrite-clj.reader :as r]))
 
 (defn parse-whitespace
   "Parse as much whitespace as possible. The created node can either contain
    only linebreaks or only space/tabs."
   [^not-native reader]
-  (if (reader/linebreak? (reader/peek reader))
+  (if (r/linebreak? (r/peek-char reader))
     (node/newline-node
-      (reader/read-while reader reader/linebreak?))
+      (r/read-while reader r/linebreak?))
     (node/whitespace-node
-      (reader/read-while reader reader/space?))))
+      (r/read-while reader r/space?))))

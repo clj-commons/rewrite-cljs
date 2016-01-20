@@ -1,7 +1,5 @@
 (ns rewrite-clj.node-test
-  (:require-macros [cemerick.cljs.test
-                    :refer (is deftest with-test run-tests testing test-var)])
-  (:require [cemerick.cljs.test :as t]
+  (:require [cljs.test :refer-macros [deftest is testing run-tests]]
             [rewrite-clj.node :as n]))
 
 
