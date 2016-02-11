@@ -49,6 +49,9 @@
 (def coerce
   "See [[protocols/coerce]]"
   prot/coerce)
+(def length
+  "See [[protocols/length]]"
+  prot/coerce)
 
 
 ; *******************************

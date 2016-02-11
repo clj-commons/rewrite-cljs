@@ -197,3 +197,5 @@
 ;; (let [form-rdr (r/indexing-push-back-reader "(+ 1 1)")]
 ;;   (read-include-linebreak form-rdr))
 
+
+;(re-matches* (re-pattern "^[:]?([^0-9/].*/)?([^0-9/][^/]*)$") ":%dill.*")

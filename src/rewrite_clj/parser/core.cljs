@@ -71,7 +71,7 @@
     \{ (node/set-node (parse-delim reader \}))
     \( (node/fn-node (parse-delim reader \)))
     \" (parse-regex reader)
-    \^ (node/raw-meta-node (parse-printables reader :meta 2 true))
+    \^ (node/meta-node (parse-printables reader :meta 2 true))
     \' (node/var-node (parse-printables reader :var 1 true))
     \= (node/eval-node (parse-printables reader :eval 1 true))
     \_ (node/uneval-node (parse-printables reader :uneval 1 true))
