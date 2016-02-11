@@ -33,4 +33,5 @@
   (is (= ":dill" (-> ":dill" z/of-string z/root-string)))
   (is (= "::dill" (-> "::dill" z/of-string z/root-string)))
   (is (= ":dill/dall" (-> ":dill/dall" z/of-string z/root-string)))
-  (is (= "::dill/dall" (-> "::dill/dall" z/of-string z/root-string))))
+  (is (= "::dill/dall" (-> "::dill/dall" z/of-string z/root-string)))
+  (is (= ":%dill.*" (-> ":%dill.*" z/of-string z/root-string))))

@@ -6,3 +6,7 @@
 (deftest namespaced-keyword
   (is (= ":dill/dall"
          (n/string (n/keyword-node :dill/dall)))))
+
+(deftest funky-keywords
+  (is (= ":%dummy.*"
+         (n/string (n/keyword-node :%dummy.*)))))
