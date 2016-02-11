@@ -48,11 +48,6 @@
   [zloc]
   (or (some-> zloc z/node node/length) 0))
 
-(defn ^{:deprecated "0.4.0"} value
-  "DEPRECATED. Return a tag/s-expression pair for inner nodes, or
-   the s-expression itself for leaves."
-  [zloc]
-  (some-> zloc z/node node/value))
 
 ;; ## Read
 
