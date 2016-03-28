@@ -1,5 +1,9 @@
 ## Changelog
 
+### 0.4.1
+- Fixed handling of global flags for regex getting lost when parsing (or rather when stringifiying them back)
+- Clean up compiler warnings
+
 ### 0.4.0
 - Upped Clojure to 1.7.0 and ClojureScript 1.7.228
 - Using cljs.tools.reader rather than a custom reader
