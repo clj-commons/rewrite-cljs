@@ -1,5 +1,8 @@
 ## Changelog
 
+### 0.4.2
+- Support reader conditionals
+
 ### 0.4.1
 - Fixed handling of global flags for regex getting lost when parsing (or rather when stringifiying them back)
 - Clean up compiler warnings
