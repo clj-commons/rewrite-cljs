@@ -19,3 +19,30 @@
     (is (= sample (-> sample p/parse-string n/string)))
     (is (= sample2 (-> sample2 p/parse-string n/string)))
     (is (= sample3 (-> sample3 p/parse-string n/string)))))
+
+
+(deftest reader-conditionals
+  (testing "Simple reader conditional"
+    (let [sample "#?(:clj bar)"
+          res (p/parse-string sample)]
+      (is (= sample (n/string res)))
+      (is (= :reader-macro (n/tag res)))
+      (is (= [:token :list] (map n/tag (n/children res))))))
+
+  (testing "Reader conditional with space before list"
+    (let [sample "#? (:clj bar)"
+          sample2 "#?@ (:clj bar)"]
+      (is (= sample (-> sample p/parse-string n/string)))
+      (is (= sample2 (-> sample2 p/parse-string n/string)))))
+
+
+  (testing "Reader conditional with splice"
+    (let [sample
+"(:require [clojure.string :as s]
+           #?@(:clj  [[clj-time.format :as tf]
+                      [clj-time.coerce :as tc]]
+               :cljs [[cljs-time.coerce :as tc]
+                      [cljs-time.format :as tf]]))"
+          res (p/parse-string sample)]
+      (is (= sample (n/string res))))))
+
