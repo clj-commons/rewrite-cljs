@@ -35,5 +35,6 @@
 
 (defn parse-regex
   [^not-native reader]
-  (let [[h & _] (read-string-data reader)]
-    (node/token-node (re-pattern h) (str "#\"" h "\""))))
+  (let [lines (read-string-data reader)
+        regex (clojure.string/join "\n" lines)]
+    (node/token-node (re-pattern regex) (str "#\"" regex "\""))))

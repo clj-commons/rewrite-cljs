@@ -21,6 +21,13 @@
     (is (= sample3 (-> sample3 p/parse-string n/string)))))
 
 
+(deftest regex-with-newlines
+  (let [sample "(re-find #\"Hello
+        \\nJalla\")"]
+    (is (= sample (-> sample p/parse-string n/string)))))
+
+
+
 (deftest reader-conditionals
   (testing "Simple reader conditional"
     (let [sample "#?(:clj bar)"
