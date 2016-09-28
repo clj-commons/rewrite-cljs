@@ -1,4 +1,4 @@
-(defproject rewrite-cljs "0.4.2"
+(defproject rewrite-cljs "0.4.3"
   :description "Comment-/Whitespace-preserving rewriting of EDN documents."
   :url "https://github.com/rundis/rewrite-cljs"
   :license {:name "MIT License"
