@@ -49,6 +49,8 @@ Here's a little teaser on the sort of things you can do with the zipper features
 
 [source,clojure]
 ----
+
+image:https://badges.gitter.im/Join%20Chat.svg[link="https://gitter.im/rundis/rewrite-cljs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"]
 (ns rewrite-clj.zip-test
   (:require-macros [cemerick.cljs.test :refer (is deftest )])
   (:require [cemerick.cljs.test :as t]
