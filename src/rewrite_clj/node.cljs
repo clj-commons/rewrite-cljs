@@ -51,7 +51,7 @@
   prot/coerce)
 (def length
   "See [[protocols/length]]"
-  prot/coerce)
+  prot/length)
 
 
 ; *******************************
