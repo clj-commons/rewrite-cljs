@@ -6,7 +6,6 @@
             [goog.string :as gstring]
             [rewrite-clj.node.protocols :as nd]))
 
-(def reader-error reader-types/reader-error)
 (def read-char reader-types/read-char)
 (def get-column-number reader-types/get-column-number)
 (def get-line-number reader-types/get-line-number)
@@ -179,7 +178,7 @@
 
 (defn read-keyword
   [^not-native reader initch]
-  (let [tok (cljs.tools.reader/read-token reader (read-char reader))
+  (let [tok (cljs.tools.reader/read-token reader :keyword (read-char reader))
         a (re-matches* (re-pattern "^[:]?([^0-9/].*/)?([^0-9/][^/]*)$") tok)
         token (aget a 0)
         ns (aget a 1)
@@ -188,7 +187,9 @@
                  (identical? (. ns (substring (- (.-length ns) 2) (.-length ns))) ":/"))
             (identical? (aget name (dec (.-length name))) ":")
             (not (== (.indexOf token "::" 1) -1)))
-      (reader-error reader "Invalid token: " token)
+      (cljs.tools.reader.impl.errors/reader-error reader 
+                                                  "Invalid token: " 
+						  token)
       (if (and (not (nil? ns)) (> (.-length ns) 0))
         (keyword (.substring ns 0 (.indexOf ns "/")) name)
         (keyword (.substring token 1))))))
