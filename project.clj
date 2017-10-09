@@ -8,7 +8,7 @@
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [org.clojure/clojurescript "1.7.228"
                   :exclusions [org.apache.ant/ant]]
-                 [org.clojure/tools.reader "1.0.0-alpha3"]]
+                 [org.clojure/tools.reader "1.0.5"]]
   :doo {:build "test"}
   :profiles {:dev
              {:plugins [[lein-cljsbuild "1.1.2"]
