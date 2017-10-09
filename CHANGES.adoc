@@ -1,5 +1,10 @@
 ## Changelog
 
+### 0.4.4
+- refactor: Upgrade tools.reader to 1.0.5 and fix broken call to read-token
+- fix: rewrite-clj.node/length
+- fix: in-range?
+
 ### 0.4.3
 - Handle multiline regex
 
