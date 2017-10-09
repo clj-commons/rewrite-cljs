@@ -18,13 +18,10 @@
 
 
 (defn in-range? [{:keys [row col end-row end-col]} {r :row c :col}]
-  (cond
-   (or  (> row r) (> r end-row)) false
-   (and (> r row) (> end-row r)) true
-   (and (>= c col) (> end-col c)) true
-   (and (= r row) (> end-row r) (>= c col)) true
-   (and (= r end-row) (> end-row r) (>= col c)) true
-   :else false))
+  (and (>= r row)
+       (<= r end-row)
+       (if (= r row) (>= c col) true)
+       (if (= r end-row) (<= c end-col) true)))
 
 
 ;; ## Find Operations
