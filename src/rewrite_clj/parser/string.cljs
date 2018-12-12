@@ -1,7 +1,8 @@
 (ns rewrite-clj.parser.string
   (:require [rewrite-clj.node :as node]
             [rewrite-clj.reader :as r]
-            [goog.string :as gstring]))
+            [goog.string :as gstring]
+            [clojure.string :as string]))
 
 (defn- flush-into
   "Flush buffer and add string to the given vector."
@@ -36,5 +37,5 @@
 (defn parse-regex
   [^not-native reader]
   (let [lines (read-string-data reader)
-        regex (clojure.string/join "\n" lines)]
+        regex (string/join "\n" lines)]
     (node/token-node (re-pattern regex) (str "#\"" regex "\""))))
