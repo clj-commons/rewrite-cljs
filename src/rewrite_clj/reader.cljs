@@ -32,7 +32,7 @@
   (< -1 (.indexOf #js [\" \: \; \' \@ \^ \` \~
                        \( \) \[ \] \{ \} \\ nil] c)))
 
-(defn- ^boolean whitespace?
+(defn ^boolean whitespace?
   "Checks whether a given character is whitespace"
   [ch]
   ;(or (gstring/isBreakingWhitespace ch) (identical? \, ch))
@@ -178,7 +178,7 @@
 
 (defn read-keyword
   [^not-native reader initch]
-  (let [tok (cljs.tools.reader/read-token reader :keyword (read-char reader))
+  (let [tok (#'cljs.tools.reader/read-token reader :keyword (read-char reader))
         a (re-matches* (re-pattern "^[:]?([^0-9/].*/)?([^0-9/][^/]*)$") tok)
         token (aget a 0)
         ns (aget a 1)
