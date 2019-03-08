@@ -1,4 +1,4 @@
-(ns rewrite-clj.editz-test
+(ns rewrite-clj.zip.editz-test
   (:require [cljs.test :refer-macros [deftest is testing run-tests]]
             [rewrite-clj.zip :as z]
             [rewrite-clj.node :as n]
