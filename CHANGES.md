@@ -1,5 +1,8 @@
 ## Changelog
 
+### Unreleased
+- freshen project - update deps, fix test runner, setup for CircleCI
+
 ### 0.4.4
 - refactor: Upgrade tools.reader to 1.0.5 and fix broken call to read-token
 - fix: rewrite-clj.node/length
@@ -34,10 +37,8 @@ Kudos to https://github.com/mhuebert for the awesome pull request !
 - Fixed bug with namespaced keywords
 - Fixed bug with coercion of function nodes
 
-
 ### 0.1.0
 - Initial release
 - Port initiated from version 0.4.12 of rewrite-clj. Check out it's https://github.com/xsc/rewrite-clj/blob/master/CHANGES.md[changelog].
   Not all functions have been ported (most notably zip subedit support and printing of nodes are missing)
 - Also added a paredit namespace for common pareedit features that modifies the source (slurp, barf, kill, join, split etc)
-
