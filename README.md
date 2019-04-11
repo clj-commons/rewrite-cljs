@@ -4,6 +4,8 @@ This library is a ClojureScript port of [rewrite-clj](https://github.com/xsc/rew
 It provides features to traverse and rewrite Clojure/ClojureScript/EDN documents in a whitespace and comment-aware manner replicating
 the behavior of its Clojure counterpart as closely as possible.
 
+> :wave: Want to chat? Say hi on [Clojurians Slack](http://clojurians.net/) in [#rewrite-clj](https://clojurians.slack.com/messages/CHB5Q2XUJ).
+
 Created by @rundis in 2015, rewrite-cljs was originally used for Clojure/ClojureScript refactoring support in [Light Table](https://github.com/LightTable/LightTable). In January of 2019, @rundis graciously transferred rewrite-cljs to clj-commons.
 
 rewrite-cljs includes:
