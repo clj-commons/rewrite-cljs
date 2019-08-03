@@ -1,5 +1,9 @@
 ## rewrite-cljs
 
+[![Clojars Project](https://img.shields.io/clojars/v/rewrite-cljs.svg)](https://clojars.org/rewrite-cljs)
+[![cljdoc badge](https://cljdoc.org/badge/rewrite-cljs)](https://cljdoc.org/d/rewrite-cljs)
+[![CircleCI](https://circleci.com/gh/clj-commons/rewrite-cljs.svg?style=svg)](https://circleci.com/gh/clj-commons/rewrite-cljs)
+
 This library is a ClojureScript port of [rewrite-clj](https://github.com/xsc/rewrite-clj).
 It provides features to traverse and rewrite Clojure/ClojureScript/EDN documents in a whitespace and comment-aware manner replicating
 the behavior of its Clojure counterpart as closely as possible.
@@ -13,9 +17,7 @@ rewrite-cljs includes:
 - An EDN aware zipper (using clojure.zip for ClojureScript)
 - A customized cljs.reader (based on [clojurescript-in-clojurescript](https://github.com/kanaka/clojurescript/blob/cljs_in_cljs/src/cljs/cljs/reader.cljs) that mimics more of clojure.tools.reader
 
-[![CircleCI](https://circleci.com/gh/clj-commons/rewrite-cljs.svg?style=svg)](https://circleci.com/gh/clj-commons/rewrite-cljs)
-[![cljdoc badge](https://cljdoc.org/badge/rewrite-cljs)](https://cljdoc.org/d/rewrite-cljs)
-[![Clojars Project](https://img.shields.io/clojars/v/rewrite-cljs.svg)](https://clojars.org/rewrite-cljs)
+
 
 ## Quick start
 Here's a little teaser on the sort of things you can do with the zipper features.
