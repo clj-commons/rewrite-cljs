@@ -1,6 +1,6 @@
 (defproject rewrite-cljs "0.4.5-SNAPSHOT"
   :description "Comment-/Whitespace-preserving rewriting of EDN documents."
-  :url "https://github.com/rundis/rewrite-cljs"
+  :url "https://github.com/clj-commons/rewrite-cljs"
   :license {:name "MIT License"
             :url "http://opensource.org/licenses/MIT"
             :year 2015
@@ -34,7 +34,7 @@
                                :exclusions [org.clojure/clojure]]]
                    :codeina {:sources ["src"]
                              :language :clojurescript
-                             :src-dir-uri "https://github.com/rundis/rewrite-cljs/blob/master/"
+                             :src-dir-uri "https://github.com/clj-commons/rewrite-cljs/blob/master/"
                              :src-linenum-anchor-prefix "L"}}}
 
   :aliases {"auto-test" ["with-profile" "dev" "do" "clean," "cljsbuild" "auto" "test"]})
