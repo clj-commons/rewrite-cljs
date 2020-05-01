@@ -1,4 +1,4 @@
-(defproject rewrite-cljs "0.4.5-SNAPSHOT"
+(defproject rewrite-cljs "0.4.5"
   :description "Comment-/Whitespace-preserving rewriting of EDN documents."
   :url "https://github.com/clj-commons/rewrite-cljs"
   :license {:name "MIT License"
@@ -9,6 +9,11 @@
                  [org.clojure/clojurescript "1.10.520"
                   :exclusions [org.apache.ant/ant]]
                  [org.clojure/tools.reader "1.3.2"]]
+
+  :deploy-repositories [["clojars" {:url "https://clojars.org/repo"
+                                    :username :env/clojars_user
+                                    :password :env/clojars_pass
+                                    :sign-releases false}]]
 
   :clean-targets ^{:protect false} [:target-path :compile-path "out"]
 

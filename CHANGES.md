@@ -1,6 +1,6 @@
 ## Changelog
 
-### Unreleased
+### 0.4.5
 - freshen project - update deps, fix test runner, setup for CircleCI
 
 ### 0.4.4
