@@ -1,5 +1,10 @@
 ## rewrite-cljs
 
+### :stop_sign: for your consideration:
+The functionality of rewrite-cljs (and much more) has been incorporated into [rewrite-clj v1](https://github.com/clj-commons/rewrite-clj).<br>
+All further work on the ClojureScript version of rewrite-clj will continue in the rewrite-clj project.<br>
+No further work is currently planned for this project.
+
 [![Clojars Project](https://img.shields.io/clojars/v/rewrite-cljs.svg)](https://clojars.org/rewrite-cljs)
 [![cljdoc badge](https://cljdoc.org/badge/rewrite-cljs)](https://cljdoc.org/d/rewrite-cljs)
 [![CircleCI](https://circleci.com/gh/clj-commons/rewrite-cljs.svg?style=svg)](https://circleci.com/gh/clj-commons/rewrite-cljs)
